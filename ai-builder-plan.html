@@ -268,17 +268,68 @@
 <section>
   <div class="section-head">
     <span class="num">03</span>
+    <h2>Sprint 2 &mdash; what shipped</h2>
+    <span class="rule"></span>
+  </div>
+  <p class="section-lede">Everything in section 02 went live this sprint, with one new layer on top &mdash; an agent that turns the roadmap into a 60-second briefing.</p>
+
+  <div class="builds stagger">
+
+    <article class="build-card">
+      <div class="build-spec">
+        <span class="id">Sprint2-001</span>
+        <span class="sep">/</span>
+        <span class="tagx">Live</span>
+        <span class="status"><span class="bullet"></span>Shipped</span>
+      </div>
+      <h3 class="build-outcome">The dashboard, the API, and the Notion backend are deployed end-to-end.</h3>
+      <dl class="build-rows">
+        <div class="build-row">
+          <dt>What's live</dt>
+          <dd class="dd-muted">A Kanban dashboard rendering Notion-backed automation cards; a serverless API handling reads and status updates; the plan page describing how it's wired. Drag a card on the dashboard and the change writes back to Notion in the background.</dd>
+        </div>
+        <div class="build-row">
+          <dt>URLs</dt>
+          <dd>
+            <a href="/">Dashboard</a> &middot;
+            <a href="/ai-builder-plan.html">Plan</a>
+          </dd>
+        </div>
+      </dl>
+    </article>
+
+    <article class="build-card">
+      <div class="build-spec">
+        <span class="id">Sprint2-002</span>
+        <span class="sep">/</span>
+        <span class="tagx">Agent &mdash; new</span>
+        <span class="status"><span class="bullet"></span>Shipped</span>
+      </div>
+      <h3 class="build-outcome">An agent turns the roadmap into a 60-second briefing.</h3>
+      <dl class="build-rows">
+        <div class="build-row">
+          <dt>Inputs</dt>
+          <dd class="dd-muted">Reads the Notion roadmap and recent Claude Code session history.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Output</dt>
+          <dd>A short briefing &mdash; current priorities, where work is stalling, and one new automation worth adding to the queue. Runs as a Claude Code skill so it's available in-line with whatever I'm working on.</dd>
+        </div>
+      </dl>
+    </article>
+
+  </div>
+</section>
+
+<section>
+  <div class="section-head">
+    <span class="num">04</span>
     <h2>What comes next</h2>
     <span class="rule"></span>
   </div>
   <p class="section-lede">Each remaining sprint ships a concrete piece of the build system. Placeholders fill in as they land.</p>
 
   <div class="sprint-grid stagger">
-    <div class="sprint-card">
-      <div class="sprint-id">Sprint 2</div>
-      <div class="sprint-title">Deployed website + data collection tool</div>
-      <div class="sprint-status"><span class="bullet"></span>Shipped</div>
-    </div>
     <div class="sprint-card">
       <div class="sprint-id">Sprint 3</div>
       <div class="sprint-title">Automated workflow runner</div>
