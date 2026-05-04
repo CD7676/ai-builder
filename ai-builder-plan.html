@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI Builder Plan — Chris Detloff</title>
+<meta name="robots" content="noindex">
+<title>AI Builder — Project Notes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -56,8 +57,6 @@
   .hero{display:grid;grid-template-columns:0.85fr 1.15fr;gap:56px;align-items:start}
   .hero-left .label{margin-bottom:14px;display:block}
   .hero-left .name{font-family:var(--mono);font-size:22px;font-weight:500;margin:0 0 10px;letter-spacing:-.01em;color:var(--text)}
-  .hero-left .role{font-family:var(--sans);font-size:14px;color:var(--muted);margin:0 0 18px;line-height:1.55}
-  .hero-left .date{font-family:var(--mono);font-size:12px;color:var(--dim);margin:0;letter-spacing:.04em}
 
   .goal-card{border-left:2px solid var(--accent);padding:2px 0 2px 26px}
   .goal-card .label{margin-bottom:16px;display:block;color:var(--accent)}
@@ -76,18 +75,14 @@
   .section-head .rule{flex:1;height:1px;background:var(--line-soft);margin-left:12px;align-self:center}
   .section-lede{font-size:15px;color:var(--muted);margin:0 0 32px;max-width:68ch;line-height:1.65}
 
-  .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:28px}
+  .summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:28px}
   .insight{background:var(--bg-card);border:1px solid var(--line);border-radius:3px;padding:24px 24px 22px;transition:border-color .25s}
   .insight:hover{border-color:var(--accent-dim)}
   .insight .tag{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.16em;margin-bottom:18px;display:block;text-transform:uppercase}
   .insight h3{font-family:var(--serif);font-size:19px;font-weight:400;margin:0 0 14px;letter-spacing:-.01em;color:var(--text);line-height:1.3}
   .insight p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.65}
+  .insight code{font-family:var(--mono);font-size:12px;background:var(--bg-elev);color:var(--text);padding:1px 7px;border-radius:2px;border:1px solid var(--line)}
   @media(max-width:820px){.summary-grid{grid-template-columns:1fr}}
-
-  .audit-link{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border-bottom:0}
-  .audit-link .arrow{display:inline-block;transition:transform .25s ease-out}
-  .audit-link:hover{color:var(--text);border-bottom:0}
-  .audit-link:hover .arrow{transform:translateX(5px)}
 
   .builds{display:flex;flex-direction:column;gap:14px}
   .build-card{background:var(--bg-card);border:1px solid var(--line);border-radius:3px;padding:28px 32px 26px;position:relative;transition:border-color .25s,background .25s}
@@ -96,16 +91,11 @@
   .build-spec{display:flex;align-items:center;gap:14px;margin-bottom:20px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;flex-wrap:wrap}
   .build-spec .id{color:var(--accent);font-weight:500}
   .build-spec .sep{color:var(--faint)}
-  .build-spec .effort{color:var(--muted);font-weight:500}
-  .build-spec .effort.quick{color:var(--sage)}
-  .build-spec .effort.med{color:var(--warn)}
-  .build-spec .effort.big{color:var(--accent)}
-  .build-spec .hours{color:var(--muted)}
-  .build-spec .hours strong{color:var(--text);font-weight:600;letter-spacing:.04em}
+  .build-spec .tagx{color:var(--muted);font-weight:500}
   .build-spec .status{margin-left:auto;color:var(--dim);display:inline-flex;align-items:center;gap:8px}
   .build-spec .status .bullet{width:6px;height:6px;border:1px solid var(--dim);border-radius:50%;display:inline-block}
 
-  .build-outcome{font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.3;letter-spacing:-.015em;margin:0 0 22px;color:var(--text);max-width:52ch}
+  .build-outcome{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1.3;letter-spacing:-.015em;margin:0 0 22px;color:var(--text);max-width:60ch}
 
   .build-rows{border-top:1px solid var(--line-soft);padding-top:4px}
   .build-row{display:grid;grid-template-columns:120px 1fr;gap:24px;padding:14px 0;align-items:start}
@@ -113,12 +103,11 @@
   .build-row dt{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);padding-top:3px;font-weight:500}
   .build-row dd{margin:0;font-size:14px;line-height:1.65;color:var(--text)}
   .build-row dd.dd-muted{color:var(--muted)}
-  .build-row dd strong{color:var(--accent);font-weight:500}
   .build-row dd code{font-family:var(--mono);font-size:12px;background:var(--bg-elev);color:var(--text);padding:1px 7px;border-radius:2px;border:1px solid var(--line)}
 
   @media(max-width:820px){
     .build-card{padding:22px 22px 20px}
-    .build-outcome{font-size:21px}
+    .build-outcome{font-size:20px}
     .build-row{grid-template-columns:1fr;gap:6px}
   }
 
@@ -143,22 +132,20 @@
 <header>
   <div class="crumb">
     <span class="pulse"></span>
-    <strong>AI Builder Automation Portfolio</strong>
+    <strong>AI Builder</strong>
     <span class="sep">/</span>
-    <span>Build Plan</span>
+    <span>Project notes</span>
   </div>
 
   <div class="hero stagger">
     <div class="hero-left">
       <span class="label">Builder</span>
-      <h1 class="name">Chris Detloff</h1>
-      <p class="role">Technology PE Senior Associate at Partners Group<br>Based in New York City</p>
-      <p class="date">April 21, 2026</p>
+      <h1 class="name">Chris</h1>
     </div>
 
     <div class="goal-card">
-      <span class="label">#1 priority — from CLAUDE.md</span>
-      <p class="goal-text">Learn how to build with <em>AI</em>. Go from consumer to builder — professionally, with deal workflow automation and analysis tools, and personally, with side projects and prototyping.</p>
+      <span class="label">Why this exists</span>
+      <p class="goal-text">A live sandbox for going from <em>consumer</em> to <em>builder</em>. The dashboard, the API, and the deploy pipeline are all the project &mdash; not just what's on the cards.</p>
     </div>
   </div>
 </header>
@@ -169,189 +156,108 @@
     <h2>What the time audit said</h2>
     <span class="rule"></span>
   </div>
-  <p class="section-lede">Three findings from the 30-day audit that shape every build below. Gmail is the clean signal; everything else is directional.</p>
+  <p class="section-lede">A 30-day audit of where my time actually went. Three findings that shaped what to build first.</p>
 
   <div class="summary-grid stagger">
     <div class="insight">
-      <span class="tag">01 — Mode</span>
+      <span class="tag">01 &mdash; Mode</span>
       <h3>Reactive mode runs the week.</h3>
-      <p>~70% of my sent email is response to inbound — recruiters, coach, alerts. The job-search system lives in Gmail threads and in my head. No tool owns it.</p>
+      <p>The majority of outbound activity is response to inbound &mdash; alerts, threads, follow-ups. Without a system, the day runs me.</p>
     </div>
     <div class="insight">
-      <span class="tag">02 — Gap</span>
-      <h3>Goal #1 is only half-done.</h3>
-      <p>Every AI build so far (daily digest, HN digest, daily quote, settlement reminder) is personal-life. My three deal agents sit unused. The professional half of consumer-to-builder is missing.</p>
-    </div>
-    <div class="insight">
-      <span class="tag">03 — Gap</span>
-      <h3>The job search is my biggest unbuilt system.</h3>
-      <p>15+ recruiter touchpoints, 4–5 active processes, zero CRM. The largest infrastructure gap relative to hours spent. Where &ldquo;systematic job search engine&rdquo; becomes real.</p>
+      <span class="tag">02 &mdash; Pattern</span>
+      <h3>The personal automation pattern is proven.</h3>
+      <p>A daily email digest, a reading-list builder, and a few small <code>n8n</code> workflows all run on autopilot. The pattern works &mdash; the question is just where to apply it next.</p>
     </div>
   </div>
-
-  <a class="audit-link" href="time-audit.html">Full Time Audit <span class="arrow">→</span></a>
 </section>
 
 <section>
   <div class="section-head">
     <span class="num">02</span>
-    <h2>What I'm building</h2>
+    <h2>How the dashboard works</h2>
     <span class="rule"></span>
   </div>
-  <p class="section-lede">Six automations drawn from the audit, ranked by hours reclaimed × fit with Goal #1. The top of the list is the one build that hits the professional half of consumer-to-builder; the bottom of the list still compounds.</p>
+  <p class="section-lede">Static HTML on the front, a Notion database on the back, and a serverless function in between. Single-page Kanban; everything lives in one source of truth.</p>
 
   <div class="builds stagger">
 
     <article class="build-card">
       <div class="build-spec">
-        <span class="id">Build-001</span>
+        <span class="id">Layer-001</span>
         <span class="sep">/</span>
-        <span class="effort big">Big build</span>
-        <span class="sep">/</span>
-        <span class="hours"><strong>~5.0</strong> hrs reclaimed / wk</span>
-        <span class="status"><span class="bullet"></span>Not started</span>
+        <span class="tagx">Front end</span>
+        <span class="status"><span class="bullet"></span>Shipped</span>
       </div>
-      <h3 class="build-outcome">My PE deal work gets the same AI lift as my personal life.</h3>
+      <h3 class="build-outcome">A custom Kanban with pointer-driven drag/drop and FLIP animations &mdash; no framework.</h3>
       <dl class="build-rows">
         <div class="build-row">
-          <dt>Today</dt>
-          <dd class="dd-muted">Every AI automation I've shipped is personal &mdash; digest, HN, quote, settlement reminder. My three Claude Code agents (<code>diligence-researcher</code>, <code>memo-drafter</code>, <code>model-reviewer</code>) sit unused. Zero deal-work activity in the data.</dd>
+          <dt>Stack</dt>
+          <dd class="dd-muted">Plain HTML, CSS variables, vanilla JS. <code>fetch</code> hydrates from <code>/api/roadmap</code>; render is one pass over the response.</dd>
         </div>
         <div class="build-row">
-          <dt>Automated</dt>
-          <dd>Pick one PG deal stage &mdash; CIM intake &mdash; and build the AI workflow end-to-end on the work box. PDF in, one-page summary out: risks flagged, comp set sketched, management questions surfaced. Same pattern for IC memo first drafts, model sanity-checks, and recurring weekly market-update digests for the team. <strong>This is the build that makes the portfolio real.</strong></dd>
+          <dt>Interaction</dt>
+          <dd>Pointer events instead of HTML5 drag, so the same code works on touch and mouse. Position changes use the FLIP pattern (First, Last, Invert, Play) with the Web Animations API to spring cards into their new slots. Click advances a card right; right-click moves it left. Each move PATCHes Notion in the background.</dd>
         </div>
       </dl>
     </article>
 
     <article class="build-card">
       <div class="build-spec">
-        <span class="id">Build-002</span>
+        <span class="id">Layer-002</span>
         <span class="sep">/</span>
-        <span class="effort med">Medium lift</span>
-        <span class="sep">/</span>
-        <span class="hours"><strong>~3.0</strong> hrs reclaimed / wk</span>
-        <span class="status"><span class="bullet"></span>Not started</span>
+        <span class="tagx">API</span>
+        <span class="status"><span class="bullet"></span>Shipped</span>
       </div>
-      <h3 class="build-outcome">My job pipeline tells me where every role stands, without me opening Gmail.</h3>
+      <h3 class="build-outcome">A serverless function that turns a Notion database into a JSON Kanban feed.</h3>
       <dl class="build-rows">
         <div class="build-row">
-          <dt>Today</dt>
-          <dd class="dd-muted">Pipeline lives in scattered Gmail threads. Don asks &ldquo;where did Hyland end up?&rdquo; and I scroll. Recruiters fall through the gaps because no chase calendar exists.</dd>
+          <dt>Endpoint</dt>
+          <dd class="dd-muted"><code>GET /api/roadmap</code> queries the Notion data source via <code>@notionhq/client</code>, paginates the results, and maps each page to a flat card object. <code>PATCH /api/roadmap</code> updates a card's <code>Status</code> select by ID.</dd>
         </div>
         <div class="build-row">
-          <dt>Automated</dt>
-          <dd>An n8n workflow watches Gmail for recruiter senders and parses each thread into an Airtable pipeline: company, role, recruiter, stage, last touch, next action, interest score 1&ndash;10. Claude does the parsing. A Monday-morning email gives the week view &mdash; who to chase, who's stale, what's new. <strong>The &ldquo;systematic job search engine&rdquo; from CLAUDE.md, made real.</strong></dd>
+          <dt>Filtering</dt>
+          <dd>The function reads a <code>PUBLIC_ONLY</code> environment variable. When set, it filters out any row whose <code>Public</code> checkbox is false &mdash; so the same code can power a public showcase and a private mirror without divergent branches.</dd>
         </div>
       </dl>
     </article>
 
     <article class="build-card">
       <div class="build-spec">
-        <span class="id">Build-003</span>
+        <span class="id">Layer-003</span>
         <span class="sep">/</span>
-        <span class="effort quick">Quick win</span>
-        <span class="sep">/</span>
-        <span class="hours"><strong>~2.0</strong> hrs reclaimed / wk</span>
-        <span class="status"><span class="bullet"></span>Not started</span>
+        <span class="tagx">Data</span>
+        <span class="status"><span class="bullet"></span>Shipped</span>
       </div>
-      <h3 class="build-outcome">Recruiter inbound gets pre-triaged into yes / maybe / pass before I touch it.</h3>
+      <h3 class="build-outcome">Notion is the database, the editor, and the spec viewer in one.</h3>
       <dl class="build-rows">
         <div class="build-row">
-          <dt>Today</dt>
-          <dd class="dd-muted">Each recruiter email is a 5&ndash;10 minute decision: read the JD, judge fit, draft a response, schedule. I do this 2&ndash;4 times per week, usually during work hours.</dd>
+          <dt>Schema</dt>
+          <dd class="dd-muted">A single database with <code>Name</code>, <code>Description</code>, <code>Project spec</code>, <code>Priority</code>, <code>Status</code>, <code>Public</code>, <code>Submitted by</code>, <code>Submitted at</code>. Schema changes go through the Notion MCP, so they're scriptable.</dd>
         </div>
         <div class="build-row">
-          <dt>Automated</dt>
-          <dd>A Claude-powered Gmail filter scores incoming recruiter emails against my stated profile (NYC, B2B software, late-stage / scaleup / PortCo exec) and auto-drafts three responses: a polite pass for clear no-fits, a &ldquo;tell me more&rdquo; for maybes, and a &ldquo;let's schedule&rdquo; for strong fits. I review and send in one click.</dd>
+          <dt>Why</dt>
+          <dd>Editing a card means typing into Notion, not opening a CMS or pushing code. The <code>Public</code> checkbox is the one bit of access control: flip it on, the card shows up here within the next request.</dd>
         </div>
       </dl>
     </article>
 
     <article class="build-card">
       <div class="build-spec">
-        <span class="id">Build-004</span>
+        <span class="id">Layer-004</span>
         <span class="sep">/</span>
-        <span class="effort quick">Quick win</span>
-        <span class="sep">/</span>
-        <span class="hours"><strong>~1.5</strong> hrs reclaimed / wk</span>
-        <span class="status"><span class="bullet"></span>Not started</span>
+        <span class="tagx">Deploy</span>
+        <span class="status"><span class="bullet"></span>Shipped</span>
       </div>
-      <h3 class="build-outcome">The job-alert firehose collapses into one ranked weekly email, not fifty daily ones.</h3>
+      <h3 class="build-outcome">GitHub push &rarr; Vercel build &rarr; live in under a minute.</h3>
       <dl class="build-rows">
         <div class="build-row">
-          <dt>Today</dt>
-          <dd class="dd-muted">LinkedIn (3&ndash;5/day), Jobright (1&ndash;2/day), Glassdoor, Kimble, Greville &mdash; 50+ alert emails per week. I scan most and act on almost none.</dd>
+          <dt>Pipeline</dt>
+          <dd class="dd-muted">Vercel's Git integration watches <code>main</code>. Every push triggers a build of the static files plus the serverless function. <code>NOTION_TOKEN</code> and <code>NOTION_DATABASE_ID</code> live in Vercel env vars, never in the repo.</dd>
         </div>
         <div class="build-row">
-          <dt>Automated</dt>
-          <dd>Extend the Daily Email Digest I already built. Alerts get parsed for role, company, comp, and location; scored against my target profile; deduped across sources; and rolled into a Friday email with the top 5&ndash;10 worth a closer look. Everything else auto-archives.</dd>
-        </div>
-      </dl>
-    </article>
-
-    <article class="build-card">
-      <div class="build-spec">
-        <span class="id">Build-005</span>
-        <span class="sep">/</span>
-        <span class="effort med">Medium lift</span>
-        <span class="sep">/</span>
-        <span class="hours"><strong>~1.0</strong> hr reclaimed / wk</span>
-        <span class="status"><span class="bullet"></span>Not started</span>
-      </div>
-      <h3 class="build-outcome">Networking calls produce a structured record, not just a &ldquo;thanks for talking&rdquo; email.</h3>
-      <dl class="build-rows">
-        <div class="build-row">
-          <dt>Today</dt>
-          <dd class="dd-muted">Calls with Andrew Schmitt (Builders VC), Kyle Bryant (Fractional AI), Jeremy Noskin (Alternative Payments) &mdash; each ends in a short thank-you and then nothing structured. Six months later it's hard to remember what each person does or what next step I committed to.</dd>
-        </div>
-        <div class="build-row">
-          <dt>Automated</dt>
-          <dd>Wispr Flow plus a Claude skill. Dictate a 60-second post-call brain dump; Claude turns it into a contact card &mdash; who, role, themes, next action, when to follow up &mdash; and feeds the same Airtable as the job pipeline. Six months from now I have a real network I can query.</dd>
-        </div>
-      </dl>
-    </article>
-
-    <article class="build-card">
-      <div class="build-spec">
-        <span class="id">Build-006</span>
-        <span class="sep">/</span>
-        <span class="effort quick">Quick win</span>
-        <span class="sep">/</span>
-        <span class="hours"><strong>~1.0</strong> hr reclaimed / wk</span>
-        <span class="status"><span class="bullet"></span>Not started</span>
-      </div>
-      <h3 class="build-outcome">Every coaching session with Don leaves a structured artifact, not just an email.</h3>
-      <dl class="build-rows">
-        <div class="build-row">
-          <dt>Today</dt>
-          <dd class="dd-muted">Don sends a recap after each session. I read it, reply &ldquo;thanks,&rdquo; and the insights disappear into the inbox. Nothing compounds session to session.</dd>
-        </div>
-        <div class="build-row">
-          <dt>Automated</dt>
-          <dd>A Claude skill ingests Don's recap emails, tags themes (positioning, recruiter strategy, interview reps), and appends them to a rolling &ldquo;Coaching Notes&rdquo; doc with action items. The same skill flags what's still open from prior sessions.</dd>
-        </div>
-      </dl>
-    </article>
-
-    <article class="build-card">
-      <div class="build-spec">
-        <span class="id">Build-007</span>
-        <span class="sep">/</span>
-        <span class="effort med">Medium lift</span>
-        <span class="sep">/</span>
-        <span class="hours"><strong>~2.0</strong> hrs reclaimed / wk</span>
-        <span class="status"><span class="bullet"></span>Not started</span>
-      </div>
-      <h3 class="build-outcome">For every interesting job, I have a ranked list of who to reach out to and how warm the path is.</h3>
-      <dl class="build-rows">
-        <div class="build-row">
-          <dt>Today</dt>
-          <dd class="dd-muted">The job-search pipeline ends at the sheet. For each interesting role, manually opening LinkedIn, going to the company's People tab, scrolling for 2nd-degree connections, mentally cross-referencing who in my network might know them, then guessing a corporate email is 15&ndash;30 min per role. Most &ldquo;interested&rdquo; roles get applied to via the website with no warm path attempted.</dd>
-        </div>
-        <div class="build-row">
-          <dt>Automated</dt>
-          <dd>For each role I mark interested in the Jobs sheet, Claude opens the company's LinkedIn People tab via Chrome MCP, reads the 2nd-degree connections it surfaces, and cross-references against my connection spreadsheet (annotated with 1&ndash;5 confidence per person). Output: a ranked list per role of who to reach out to, who to ask for the intro, and a guessed corporate email via Hunter.io for cold paths. Lands on a new &ldquo;Outreach Plan&rdquo; tab in the same sheet. <strong>Closes the loop from &ldquo;scored opportunity&rdquo; to &ldquo;first-touch action.&rdquo;</strong></dd>
+          <dt>Two deployments, one repo pattern</dt>
+          <dd>The same code runs as a public showcase and as a private full version, separated only by env vars and deployment protection. No code forks; the difference is a single boolean.</dd>
         </div>
       </dl>
     </article>
@@ -362,20 +268,20 @@
 <section>
   <div class="section-head">
     <span class="num">03</span>
-    <h2>My system — what comes next</h2>
+    <h2>What comes next</h2>
     <span class="rule"></span>
   </div>
-  <p class="section-lede">Each remaining Sprint ships a concrete piece of the Automation Portfolio. Placeholders fill in as they land.</p>
+  <p class="section-lede">Each remaining sprint ships a concrete piece of the build system. Placeholders fill in as they land.</p>
 
   <div class="sprint-grid stagger">
     <div class="sprint-card">
       <div class="sprint-id">Sprint 2</div>
       <div class="sprint-title">Deployed website + data collection tool</div>
-      <div class="sprint-status"><span class="bullet"></span>Coming in Sprint 2</div>
+      <div class="sprint-status"><span class="bullet"></span>Shipped</div>
     </div>
     <div class="sprint-card">
       <div class="sprint-id">Sprint 3</div>
-      <div class="sprint-title">Automated n8n or Claude Routines workflow</div>
+      <div class="sprint-title">Automated workflow runner</div>
       <div class="sprint-status"><span class="bullet"></span>Coming in Sprint 3</div>
     </div>
     <div class="sprint-card">
@@ -397,7 +303,7 @@
 </section>
 
 <footer>
-  AI Builder Automation Portfolio <span class="sep">—</span> April 21, 2026 <span class="sep">|</span> Built in L2
+  AI Builder <span class="sep">|</span> Project notes
 </footer>
 
 </div>

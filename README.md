@@ -1,13 +1,11 @@
 # AI Builder
 
-Chris Detloff's public AI Builder portfolio site.
+Public AI Builder portfolio site.
 
-- **Live:** TBD on first deploy
 - **Pages:**
   - `/` (and `/ai-builder-dashboard.html`) — interactive Kanban roadmap, Notion-backed
-  - `/ai-builder-plan.html` — six-build automation portfolio plan
-  - `/time-audit.html` — 30-day time audit that justifies the build plan
-- **API:** `/api/roadmap` — GET all rows / PATCH status by ID, against the Notion `AI Automation Roadmap` database
+  - `/ai-builder-plan.html` — project notes on how the site is built
+- **API:** `/api/roadmap` — GET public rows / PATCH status by ID, against the Notion `AI Automation Roadmap` database. The public deploy sets `PUBLIC_ONLY=true` so only rows with `Public=true` are returned.
 
 ## Deploy
 

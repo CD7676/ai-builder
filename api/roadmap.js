@@ -51,9 +51,13 @@ export default async function handler(req, res) {
           col: STATUS_TO_COL[status] || 'suggested',
           submittedBy: rt(props['Submitted by']?.rich_text),
           submittedAt: props['Submitted at']?.date?.start || null,
+          public: props.Public?.checkbox === true,
         };
       });
-      return res.status(200).json({ cards });
+      const filtered = process.env.PUBLIC_ONLY === 'true'
+        ? cards.filter(c => c.public === true)
+        : cards;
+      return res.status(200).json({ cards: filtered });
     }
 
     if (req.method === 'PATCH') {
@@ -66,6 +70,12 @@ export default async function handler(req, res) {
       if (!id) return res.status(400).json({ error: 'id required' });
       const newStatus = status || COL_TO_STATUS[col];
       if (!newStatus) return res.status(400).json({ error: 'col or status required' });
+
+      if (process.env.PUBLIC_ONLY === 'true') {
+        const page = await notion.pages.retrieve({ page_id: id });
+        const isPublic = page?.properties?.Public?.checkbox === true;
+        if (!isPublic) return res.status(403).json({ error: 'forbidden' });
+      }
 
       await notion.pages.update({
         page_id: id,
