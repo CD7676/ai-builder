@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Builder Dashboard — Chris Detloff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0908;
+    --bg-card:#131110;
+    --bg-elev:#1a1714;
+    --line:#2a2520;
+    --line-soft:#1f1b17;
+    --text:#f0ece4;
+    --muted:#8a847a;
+    --dim:#55504a;
+    --faint:#33302c;
+    --accent:#d97757;
+    --accent-dim:#8b4a2e;
+    --accent-soft:rgba(217,119,87,.12);
+    --sage:#9ecd80;
+    --warn:#e0b05a;
+    --mono:'JetBrains Mono',ui-monospace,'Consolas',monospace;
+    --sans:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;
+    --serif:'Fraunces',ui-serif,Georgia,serif;
+  }
+  *{box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--text);font-family:var(--sans);margin:0;padding:0;line-height:1.55;font-size:15px;font-weight:400;-webkit-font-smoothing:antialiased}
+  body{background-image:radial-gradient(ellipse 70% 50% at 50% -5%,rgba(217,119,87,0.10),transparent 70%);min-height:100vh}
+  .wrap{max-width:1500px;margin:0 auto;padding:48px 32px 96px}
+
+  .label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:500}
+
+  header{padding-bottom:32px;margin-bottom:36px;border-bottom:1px solid var(--line)}
+  .crumb{display:flex;gap:14px;align-items:center;margin-bottom:28px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+  .crumb .pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2.4s ease-in-out infinite}
+  .crumb .sep{color:var(--faint)}
+  .crumb strong{color:var(--text);font-weight:500}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  .head-row{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap}
+  h1{font-family:var(--serif);font-weight:300;font-size:38px;letter-spacing:-.02em;margin:0 0 6px;color:var(--text)}
+  h1 em{font-style:italic;color:var(--accent);font-weight:400}
+  .sub{font-family:var(--sans);font-size:14px;color:var(--muted);margin:0;max-width:60ch}
+
+  .actions{display:flex;gap:10px;align-items:center}
+  .btn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);background:transparent;border:1px solid var(--line);padding:10px 14px;border-radius:3px;cursor:pointer;transition:all .2s;font-weight:500}
+  .btn:hover{border-color:var(--accent-dim);color:var(--text)}
+  .btn.primary{color:var(--accent);border-color:var(--accent-dim)}
+  .btn.primary:hover{background:var(--accent-soft);color:var(--text)}
+
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;align-items:start}
+  @media(max-width:1100px){.board{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:640px){.board{grid-template-columns:1fr}}
+
+  .col{background:var(--bg-card);border:1px solid var(--line);border-radius:4px;padding:18px 16px 22px;min-height:420px;display:flex;flex-direction:column;transition:border-color .2s,background .2s}
+  .col.suggested{background:transparent;border:1px dashed var(--line);color:var(--muted)}
+  .col.suggested .col-title{color:var(--dim)}
+  .col.suggested .col-count{color:var(--dim);border-color:var(--faint)}
+  .col.dragover{border-color:var(--accent);background:rgba(217,119,87,0.04)}
+
+  .col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--line-soft)}
+  .col-title{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--text)}
+  .col-count{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;border:1px solid var(--line);padding:2px 8px;border-radius:10px;font-weight:500}
+
+  .stack{display:flex;flex-direction:column;gap:10px;flex:1;min-height:80px}
+
+  .card{background:var(--bg-elev);border:1px solid var(--line);border-radius:3px;padding:16px 16px 14px;cursor:grab;transition:border-color .2s,background .2s,box-shadow .2s;position:relative;user-select:none;touch-action:none;will-change:transform}
+  .card:hover{border-color:var(--accent-dim)}
+  .card:active{cursor:grabbing}
+  .card.lifted{cursor:grabbing;z-index:1000;box-shadow:0 28px 60px -12px rgba(0,0,0,.65),0 0 0 1px var(--accent-dim),0 0 32px rgba(217,119,87,.18);border-color:var(--accent-dim);pointer-events:none}
+  .card.placeholder-hidden{visibility:hidden}
+  .col.suggested .card{background:transparent;border-style:dashed;border-color:var(--line-soft)}
+  .col.suggested .card .card-name{color:var(--muted)}
+  .col.suggested .card .card-desc{color:var(--dim)}
+
+  .card-meta{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+  .card-id{color:var(--accent);font-weight:500}
+  .col.suggested .card-id{color:var(--dim)}
+  .priority{margin-left:auto;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+  .priority .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+  .priority.high{color:var(--accent)}
+  .priority.high .dot{background:var(--accent);box-shadow:0 0 6px var(--accent)}
+  .priority.medium{color:var(--warn)}
+  .priority.medium .dot{background:var(--warn)}
+  .priority.low{color:var(--sage)}
+  .priority.low .dot{background:var(--sage)}
+  .col.suggested .priority{color:var(--dim)}
+  .col.suggested .priority .dot{background:var(--dim);box-shadow:none}
+
+  .card-name{font-family:var(--serif);font-size:16px;font-weight:400;line-height:1.3;letter-spacing:-.005em;color:var(--text);margin:0 0 8px}
+  .card-desc{font-size:13px;color:var(--muted);line-height:1.55;margin:0}
+
+  .card-delete{position:absolute;top:10px;right:10px;width:18px;height:18px;border:none;background:transparent;color:var(--dim);font-size:14px;cursor:pointer;opacity:0;transition:opacity .2s,color .2s;font-family:var(--mono);line-height:1;padding:0}
+  .card:hover .card-delete{opacity:1}
+  .card-delete:hover{color:var(--accent)}
+
+  .add-card{margin-top:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);background:transparent;border:1px dashed var(--line);padding:10px;border-radius:3px;cursor:pointer;transition:all .2s;font-weight:500;width:100%}
+  .add-card:hover{border-color:var(--accent-dim);color:var(--accent)}
+
+  .empty{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.12em;text-transform:uppercase;text-align:center;padding:24px 8px;border:1px dashed transparent;border-radius:3px}
+
+  /* modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(10,9,8,.85);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;backdrop-filter:blur(4px)}
+  .modal-bg.show{display:flex}
+  .modal{background:var(--bg-card);border:1px solid var(--line);border-radius:4px;padding:32px;max-width:520px;width:100%;max-height:88vh;overflow-y:auto}
+  .modal.spec{max-width:680px}
+  .spec-meta{display:flex;align-items:center;gap:14px;margin-bottom:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;flex-wrap:wrap}
+  .spec-meta .id{color:var(--accent);font-weight:500}
+  .spec-meta .sep{color:var(--faint)}
+  .spec-meta .priority-pill{display:inline-flex;align-items:center;gap:6px;font-weight:500}
+  .spec-meta .priority-pill .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+  .spec-meta .priority-pill.high{color:var(--accent)} .spec-meta .priority-pill.high .dot{background:var(--accent);box-shadow:0 0 6px var(--accent)}
+  .spec-meta .priority-pill.medium{color:var(--warn)} .spec-meta .priority-pill.medium .dot{background:var(--warn)}
+  .spec-meta .priority-pill.low{color:var(--sage)} .spec-meta .priority-pill.low .dot{background:var(--sage)}
+  .spec-meta .col-pill{color:var(--muted);border:1px solid var(--line);padding:2px 9px;border-radius:10px}
+  .spec-title{font-family:var(--serif);font-weight:300;font-size:30px;line-height:1.25;letter-spacing:-.015em;margin:0 0 12px;color:var(--text)}
+  .spec-desc{font-size:14px;color:var(--muted);line-height:1.6;margin:0 0 22px;padding-bottom:18px;border-bottom:1px solid var(--line-soft)}
+  .spec-label{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:12px;font-weight:500}
+  .spec-body{font-family:var(--sans);font-size:14.5px;color:var(--text);line-height:1.7;white-space:pre-wrap;margin:0}
+  .spec-body.empty{color:var(--dim);font-style:italic}
+  .spec-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:28px;padding-top:18px;border-top:1px solid var(--line-soft)}
+  .modal h2{font-family:var(--serif);font-weight:400;font-size:24px;margin:0 0 22px;color:var(--text);letter-spacing:-.01em}
+  .field{margin-bottom:18px}
+  .field label{display:block;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:8px;font-weight:500}
+  .field input,.field textarea,.field select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:10px 12px;color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5;outline:none;transition:border-color .2s}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent)}
+  .field textarea{resize:vertical;min-height:64px;font-family:var(--sans)}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+
+  footer{border-top:1px solid var(--line);padding-top:24px;margin-top:64px;font-family:var(--mono);font-size:11px;color:var(--dim);text-align:center;letter-spacing:.16em;text-transform:uppercase}
+  footer .sep{color:var(--faint);margin:0 14px}
+  footer a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="crumb">
+    <span class="pulse"></span>
+    <strong>AI Builder Automation Portfolio</strong>
+    <span class="sep">/</span>
+    <span>Roadmap Kanban</span>
+  </div>
+  <div class="head-row">
+    <div>
+      <h1>What I'm <em>building</em>.</h1>
+      <p class="sub">Drag cards across columns to update status. The Suggested column collects ideas — from me or from others — that haven't been picked up yet. State persists in your browser.</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="resetBtn" title="Reload from Notion">Reload</button>
+      <button class="btn primary" id="addBtn">+ New Card</button>
+    </div>
+  </div>
+</header>
+
+<div class="board" id="board">
+  <div class="col suggested" data-col="suggested">
+    <div class="col-header">
+      <span class="col-title">Suggested</span>
+      <span class="col-count" data-count></span>
+    </div>
+    <div class="stack" data-stack></div>
+    <button class="add-card" data-add="suggested">+ Add idea</button>
+  </div>
+  <div class="col" data-col="todo">
+    <div class="col-header">
+      <span class="col-title">To Build</span>
+      <span class="col-count" data-count></span>
+    </div>
+    <div class="stack" data-stack></div>
+    <button class="add-card" data-add="todo">+ Add card</button>
+  </div>
+  <div class="col" data-col="progress">
+    <div class="col-header">
+      <span class="col-title">In Progress</span>
+      <span class="col-count" data-count></span>
+    </div>
+    <div class="stack" data-stack></div>
+    <button class="add-card" data-add="progress">+ Add card</button>
+  </div>
+  <div class="col" data-col="done">
+    <div class="col-header">
+      <span class="col-title">Done</span>
+      <span class="col-count" data-count></span>
+    </div>
+    <div class="stack" data-stack></div>
+    <button class="add-card" data-add="done">+ Add card</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="specModal">
+  <div class="modal spec">
+    <div class="spec-meta">
+      <span class="id" id="sId"></span>
+      <span class="sep">/</span>
+      <span class="priority-pill" id="sPri"><span class="dot"></span><span data-text></span></span>
+      <span class="sep">/</span>
+      <span class="col-pill" id="sCol"></span>
+    </div>
+    <h2 class="spec-title" id="sName"></h2>
+    <p class="spec-desc" id="sDesc"></p>
+    <div class="spec-label">Project spec</div>
+    <p class="spec-body" id="sBody"></p>
+    <div class="spec-actions">
+      <button class="btn" id="sEditBtn">Edit</button>
+      <button class="btn primary" id="sCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h2 id="modalTitle">New automation</h2>
+    <div class="field">
+      <label>Name</label>
+      <input id="fName" type="text" placeholder="Short title for the automation">
+    </div>
+    <div class="field">
+      <label>One-line description</label>
+      <textarea id="fDesc" placeholder="What does it do, in a sentence?"></textarea>
+    </div>
+    <div class="field">
+      <label>Project spec</label>
+      <textarea id="fSpec" placeholder="Problem, approach, success criteria..." style="min-height:140px"></textarea>
+    </div>
+    <div class="field">
+      <label>Priority</label>
+      <select id="fPri">
+        <option value="High">High</option>
+        <option value="Medium" selected>Medium</option>
+        <option value="Low">Low</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Column</label>
+      <select id="fCol">
+        <option value="suggested">Suggested</option>
+        <option value="todo" selected>To Build</option>
+        <option value="progress">In Progress</option>
+        <option value="done">Done</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="cancelBtn">Cancel</button>
+      <button class="btn primary" id="saveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  AI Builder Automation Portfolio <span class="sep">—</span> Roadmap <span class="sep">|</span>
+  <a href="ai-builder-plan.html">Full Build Plan</a>
+</footer>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'ai-builder-dashboard-v1';
+const COL_ORDER = ['suggested','todo','progress','done'];
+const DRAG_THRESHOLD = 5;
+
+const DEFAULT_CARDS = [
+  {id:'B001', name:'PE deal-work AI lift', desc:'CIM intake, IC memo first drafts, model sanity-checks, weekly market digests for the team.', priority:'High', col:'todo',
+   spec:"Problem: every AI automation I've shipped is personal-life (digest, HN, quote). My three Claude Code agents (diligence-researcher, memo-drafter, model-reviewer) sit unused. The professional half of consumer-to-builder is missing.\n\nApproach: pick one PG deal stage — CIM intake — and build the AI workflow end-to-end on the work box. PDF in, one-page summary out: risks flagged, comp set sketched, management questions surfaced. Same pattern reused for IC memo first drafts, model sanity-checks, and a recurring weekly market-update digest for the team.\n\nSuccess criteria: at least one live deal where the CIM-intake output is used in the actual diligence kickoff, plus a weekly team digest running for four consecutive Mondays."},
+  {id:'B002', name:'Job pipeline auto-tracker', desc:'n8n watches Gmail, parses recruiter threads into Airtable; Monday-morning week view email.', priority:'High', col:'todo',
+   spec:"Problem: pipeline lives in scattered Gmail threads. When Don asks 'where did Hyland end up?' I scroll. Recruiters fall through gaps because no chase calendar exists. The 'systematic job search engine' from CLAUDE.md is still vapor.\n\nApproach: an n8n workflow watches Gmail for recruiter senders and parses each thread with Claude into an Airtable pipeline — company, role, recruiter, stage, last touch, next action, interest score 1–10. A Monday-morning email gives the week view: who to chase, who's stale, what's new.\n\nSuccess criteria: zero recruiter threads parsed manually for two consecutive weeks; Airtable pipeline accurately reflects every active process; the Monday email is something I actually open."},
+  {id:'B003', name:'Recruiter inbound triage', desc:'Claude scores incoming recruiter emails against my profile and drafts pass / maybe / schedule replies.', priority:'Medium', col:'todo',
+   spec:"Problem: each recruiter email is a 5–10 minute decision — read the JD, judge fit, draft a response, schedule. I do this 2–4 times per week, usually during work hours when I should be on deals.\n\nApproach: a Claude-powered Gmail filter scores incoming recruiter emails against my stated profile (NYC, B2B software, late-stage / scaleup / PortCo exec) and auto-drafts three responses: a polite pass for clear no-fits, a 'tell me more' for maybes, a 'let's schedule' for strong fits. I review and send in one click.\n\nSuccess criteria: average time from inbound recruiter email to sent reply drops below 90 seconds; pass-rate accuracy validated against my actual decisions over a two-week sample."},
+  {id:'B004', name:'Job-alert digest collapse', desc:'50+ daily alerts dedupe and roll into one ranked Friday email; everything else auto-archives.', priority:'Medium', col:'todo',
+   spec:"Problem: LinkedIn (3–5/day), Jobright (1–2/day), Glassdoor, Kimble, Greville — 50+ alert emails per week. I scan most and act on almost none. Pure noise that crowds out the real signal in the inbox.\n\nApproach: extend the existing Daily Email Digest. Alerts get parsed for role, company, comp, location; scored against my target profile; deduped across sources; rolled into a Friday email with the top 5–10 worth a closer look. Everything else auto-archives.\n\nSuccess criteria: weekly alert noise in primary inbox drops to zero; the Friday digest produces at least one role per month I'd otherwise have missed."},
+  {id:'B005', name:'Networking call CRM', desc:'Wispr dictation + Claude skill turns post-call dumps into structured contact cards in Airtable.', priority:'Low', col:'todo',
+   spec:"Problem: calls with Andrew Schmitt (Builders VC), Kyle Bryant (Fractional AI), Jeremy Noskin (Alternative Payments) — each ends in a short thank-you and then nothing structured. Six months later it's hard to remember what each person does or what next step I committed to.\n\nApproach: Wispr Flow plus a Claude skill. Dictate a 60-second post-call brain dump; Claude turns it into a contact card — who, role, themes, next action, when to follow up — and feeds the same Airtable as the job pipeline.\n\nSuccess criteria: every networking call from now on has a card within 24 hours; six months later I can query 'who works on payments infra?' and get a real answer."},
+  {id:'B006', name:'Coaching session knowledge base', desc:'Don’s recap emails get tagged and appended to a rolling Coaching Notes doc with open action items.', priority:'Low', col:'todo',
+   spec:"Problem: Don sends a recap after each session. I read it, reply 'thanks,' and the insights disappear into the inbox. Nothing compounds session to session — I keep relearning the same lessons on positioning and recruiter strategy.\n\nApproach: a Claude skill ingests Don's recap emails, tags themes (positioning, recruiter strategy, interview reps), and appends them to a rolling 'Coaching Notes' doc with action items. The same skill flags what's still open from prior sessions before each new one.\n\nSuccess criteria: one consolidated Coaching Notes doc that I actually reference between sessions; pre-session brief surfaces at least one prior open item every time."},
+  {id:'B007', name:'Warm-path outreach planner', desc:'For each interesting role, Claude finds 2nd-degree connections and ranks who to ask for the intro.', priority:'Medium', col:'todo',
+   spec:"Problem: the job-search pipeline ends at the sheet. For each interesting role, manually opening LinkedIn, going to the company's People tab, scrolling for 2nd-degree connections, mentally cross-referencing who in my network might know them, then guessing a corporate email is 15–30 minutes per role. Most 'interested' roles get applied to via the website with no warm path attempted.\n\nApproach: for each role I mark 'interested' in the Jobs sheet, Claude opens the company's LinkedIn People tab via Chrome MCP, reads the 2nd-degree connections, and cross-references against my connection spreadsheet (annotated with 1–5 confidence per person). Output: a ranked list per role of who to reach out to, who to ask for the intro, and a guessed corporate email via Hunter.io for cold paths. Lands on a new 'Outreach Plan' tab in the same sheet.\n\nSuccess criteria: every 'interested' role gets a warm-path plan within 24 hours; reply rate on warm intros measurably above cold applies after a 30-day sample."},
+];
+
+const COL_LABELS = {suggested:'Suggested', todo:'To Build', progress:'In Progress', done:'Done'};
+
+// Declare ALL mutable state before render() — temporal-dead-zone safety.
+let state = [];
+let editingId = null;
+let pendingClickTimer = null;
+let drag = null; // { id, el, pointerId, startX, startY, originRect, offsetX, offsetY, started, button, currentCol }
+const PICKUP_MS = 180;
+const DROP_MS = 440;
+const REFLOW_MS = 190;
+const SPRING = 'cubic-bezier(.34,1.25,.5,1)';
+const SOFT = 'cubic-bezier(.33,1,.68,1)';
+
+async function fetchRoadmap(){
+  const res = await fetch('/api/roadmap', { cache: 'no-store' });
+  if(!res.ok) throw new Error('roadmap fetch failed: ' + res.status);
+  const data = await res.json();
+  return Array.isArray(data.cards) ? data.cards : [];
+}
+
+async function patchStatus(id, col){
+  try{
+    const res = await fetch('/api/roadmap', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, col }),
+    });
+    if(!res.ok){
+      const err = await res.text();
+      console.error('patch failed', res.status, err);
+    }
+  }catch(e){ console.error('patch error', e); }
+}
+
+// no-op: Notion is the source of truth. Drag handler calls patchStatus directly.
+function save(){}
+
+function nextId(){
+  let max = 0;
+  state.forEach(c=>{
+    const m = /^B(\d+)$/.exec(c.id||'');
+    if(m) max = Math.max(max, parseInt(m[1],10));
+  });
+  return 'B' + String(max+1).padStart(3,'0');
+}
+
+function render(){
+  document.querySelectorAll('[data-stack]').forEach(s=>s.innerHTML='');
+  const counts = {suggested:0, todo:0, progress:0, done:0};
+  state.forEach(c=>{
+    counts[c.col] = (counts[c.col]||0) + 1;
+    const stack = document.querySelector('.col[data-col="'+c.col+'"] [data-stack]');
+    if(!stack) return;
+    stack.appendChild(buildCard(c));
+  });
+  document.querySelectorAll('.col').forEach(col=>{
+    const k = col.getAttribute('data-col');
+    col.querySelector('[data-count]').textContent = counts[k] || 0;
+    const stack = col.querySelector('[data-stack]');
+    if(!stack.children.length){
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = 'Drop cards here';
+      stack.appendChild(empty);
+    }
+  });
+}
+
+function buildCard(c){
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.dataset.id = c.id;
+  el.innerHTML = `
+    <button class="card-delete" title="Delete" aria-label="Delete">×</button>
+    <div class="card-meta">
+      <span class="card-id">${escapeHtml(c.id)}</span>
+      <span class="priority ${c.priority.toLowerCase()}"><span class="dot"></span>${escapeHtml(c.priority)}</span>
+    </div>
+    <h3 class="card-name">${escapeHtml(c.name)}</h3>
+    <p class="card-desc">${escapeHtml(c.desc)}</p>
+  `;
+  el.querySelector('.card-delete').addEventListener('pointerdown', e=>e.stopPropagation());
+  el.querySelector('.card-delete').addEventListener('click', e=>{
+    e.stopPropagation();
+    if(confirm('Delete "'+c.name+'"?')){
+      state = state.filter(x=>x.id!==c.id);
+      save(); render();
+    }
+  });
+  el.addEventListener('contextmenu', e=>{
+    e.preventDefault();
+    if(drag && drag.started) return;
+    drag = null;
+    moveCard(c.id, -1);
+  });
+  el.addEventListener('pointerdown', e=>onPointerDown(e, c));
+  return el;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+// ---- pointer-driven drag ----
+function onPointerDown(e, c){
+  if(e.button !== 0 && e.button !== 2) return;
+  if(e.target.closest('.card-delete')) return;
+  const el = e.currentTarget;
+  drag = {
+    id: c.id,
+    el,
+    pointerId: e.pointerId,
+    startX: e.clientX,
+    startY: e.clientY,
+    button: e.button,
+    started: false,
+    originRect: null,
+    offsetX: 0, offsetY: 0,
+    currentCol: null,
+  };
+  try{ el.setPointerCapture(e.pointerId); }catch(_){}
+  el.addEventListener('pointermove', onPointerMove);
+  el.addEventListener('pointerup', onPointerUp);
+  el.addEventListener('pointercancel', onPointerUp);
+}
+
+function onPointerMove(e){
+  if(!drag) return;
+  const dx = e.clientX - drag.startX;
+  const dy = e.clientY - drag.startY;
+  if(!drag.started){
+    if(drag.button !== 0) return; // only left-button drags
+    if(Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+    beginDrag(e);
+  }
+  drag.el.style.transform =
+    `translate(${dx}px, ${dy}px) rotate(2deg) scale(1.03)`;
+  // highlight column under cursor
+  drag.el.style.pointerEvents = 'none';
+  const under = document.elementFromPoint(e.clientX, e.clientY);
+  drag.el.style.pointerEvents = '';
+  const col = under ? under.closest('.col') : null;
+  if(col !== drag.currentCol){
+    document.querySelectorAll('.col.dragover').forEach(c=>c.classList.remove('dragover'));
+    if(col) col.classList.add('dragover');
+    drag.currentCol = col;
+  }
+}
+
+function beginDrag(e){
+  drag.started = true;
+  const el = drag.el;
+  // capture sibling rects for source-column reflow when card leaves flow
+  const beforeRects = captureRects();
+  const r = el.getBoundingClientRect();
+  drag.originRect = r;
+  drag.offsetX = drag.startX - r.left;
+  drag.offsetY = drag.startY - r.top;
+  // float the card without jumping
+  el.style.position = 'fixed';
+  el.style.left = r.left + 'px';
+  el.style.top = r.top + 'px';
+  el.style.width = r.width + 'px';
+  el.style.height = r.height + 'px';
+  el.style.margin = '0';
+  el.classList.add('lifted');
+  // pickup motion: animate transform from rest to lifted
+  el.animate(
+    [
+      { transform: 'translate(0,0) rotate(0deg) scale(1)' },
+      { transform: 'translate(0,0) rotate(2deg) scale(1.03)' }
+    ],
+    { duration: PICKUP_MS, easing: SPRING, fill: 'none' }
+  );
+  el.style.transform = 'translate(0,0) rotate(2deg) scale(1.03)';
+  // gently slide remaining siblings up to fill the gap
+  flipFromRects(beforeRects, { skipId: drag.id });
+}
+
+function onPointerUp(e){
+  if(!drag) return;
+  const el = drag.el;
+  el.removeEventListener('pointermove', onPointerMove);
+  el.removeEventListener('pointerup', onPointerUp);
+  el.removeEventListener('pointercancel', onPointerUp);
+  try{ el.releasePointerCapture(drag.pointerId); }catch(_){}
+  document.querySelectorAll('.col.dragover').forEach(c=>c.classList.remove('dragover'));
+
+  if(!drag.started){
+    // click — no drag
+    const button = drag.button;
+    const id = drag.id;
+    drag = null;
+    if(button === 0){
+      const c = state.find(x=>x.id===id);
+      if(c) openSpec(c);
+    }
+    // right-click handled by contextmenu listener
+    return;
+  }
+
+  // it was a drag — find drop target
+  const targetCol = drag.currentCol ? drag.currentCol.getAttribute('data-col') : null;
+  const draggedRect = el.getBoundingClientRect();
+  const draggedId = drag.id;
+
+  // capture rects of all OTHER cards before mutation/render
+  const beforeRects = captureRects();
+  beforeRects.delete(draggedId); // we'll use draggedRect for the dropped card
+  beforeRects.set(draggedId, draggedRect);
+
+  // strip the floating styles before render so the rebuilt DOM is clean
+  resetFloatStyles(el);
+
+  const card = state.find(x=>x.id===draggedId);
+  let mutated = false;
+  if(card && targetCol && targetCol !== card.col){
+    card.col = targetCol;
+    mutated = true;
+  }
+  drag = null;
+
+  render();
+  flipFromRects(beforeRects, { droppedId: draggedId });
+  if(mutated) patchStatus(draggedId, card.col);
+}
+
+function resetFloatStyles(el){
+  el.classList.remove('lifted');
+  el.style.position = '';
+  el.style.left = '';
+  el.style.top = '';
+  el.style.width = '';
+  el.style.height = '';
+  el.style.margin = '';
+  el.style.transform = '';
+  el.style.pointerEvents = '';
+}
+
+function captureRects(){
+  const map = new Map();
+  document.querySelectorAll('.card').forEach(el=>{
+    map.set(el.dataset.id, el.getBoundingClientRect());
+  });
+  return map;
+}
+
+function flipFromRects(beforeRects, opts){
+  opts = opts || {};
+  const droppedId = opts.droppedId || null;
+  const skipId = opts.skipId || null;
+  document.querySelectorAll('.card').forEach(el=>{
+    const id = el.dataset.id;
+    if(id === skipId) return;
+    const before = beforeRects.get(id);
+    if(!before) return;
+    const after = el.getBoundingClientRect();
+    const dx = before.left - after.left;
+    const dy = before.top - after.top;
+    if(id === droppedId){
+      // spring drop from floating position into slot
+      el.animate(
+        [
+          { transform: `translate(${dx}px, ${dy}px) rotate(2deg) scale(1.03)`,
+            boxShadow: '0 28px 60px -12px rgba(0,0,0,.65), 0 0 0 1px rgba(139,74,46,.9), 0 0 32px rgba(217,119,87,.18)' },
+          { transform: 'translate(0,0) rotate(0deg) scale(1)',
+            boxShadow: '0 0 0 0 rgba(0,0,0,0)' }
+        ],
+        { duration: DROP_MS, easing: SPRING, fill: 'none' }
+      );
+    } else if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+      el.animate(
+        [
+          { transform: `translate(${dx}px, ${dy}px)` },
+          { transform: 'translate(0,0)' }
+        ],
+        { duration: REFLOW_MS, easing: SOFT, fill: 'none' }
+      );
+    }
+  });
+}
+
+function moveCard(id, dir){
+  const c = state.find(x=>x.id===id);
+  if(!c) return;
+  const idx = COL_ORDER.indexOf(c.col);
+  const next = Math.max(0, Math.min(COL_ORDER.length - 1, idx + dir));
+  if(next === idx) return;
+  const beforeRects = captureRects();
+  c.col = COL_ORDER[next];
+  render();
+  flipFromRects(beforeRects, { droppedId: id });
+  patchStatus(id, c.col);
+}
+
+// suppress browser context menu globally on the board so right-click retreat is clean
+document.getElementById('board').addEventListener('contextmenu', e=>{
+  if(e.target.closest('.card')) e.preventDefault();
+});
+
+// edit modal
+const modal = document.getElementById('modal');
+const fName = document.getElementById('fName');
+const fDesc = document.getElementById('fDesc');
+const fSpec = document.getElementById('fSpec');
+const fPri = document.getElementById('fPri');
+const fCol = document.getElementById('fCol');
+const modalTitle = document.getElementById('modalTitle');
+
+function openModal(card, defaultCol){
+  editingId = card ? card.id : null;
+  modalTitle.textContent = card ? 'Edit automation' : 'New automation';
+  fName.value = card ? card.name : '';
+  fDesc.value = card ? card.desc : '';
+  fSpec.value = card ? (card.spec || '') : '';
+  fPri.value = card ? card.priority : 'Medium';
+  fCol.value = card ? card.col : (defaultCol || 'todo');
+  modal.classList.add('show');
+  setTimeout(()=>fName.focus(), 50);
+}
+function closeModal(){ modal.classList.remove('show'); editingId=null; }
+
+// spec viewer modal
+const specModal = document.getElementById('specModal');
+const sId = document.getElementById('sId');
+const sName = document.getElementById('sName');
+const sDesc = document.getElementById('sDesc');
+const sBody = document.getElementById('sBody');
+const sPri = document.getElementById('sPri');
+const sCol = document.getElementById('sCol');
+const sEditBtn = document.getElementById('sEditBtn');
+const sCloseBtn = document.getElementById('sCloseBtn');
+let specViewing = null;
+
+function openSpec(card){
+  specViewing = card.id;
+  sId.textContent = card.id;
+  sName.textContent = card.name;
+  sDesc.textContent = card.desc || '';
+  if(card.spec && card.spec.trim()){
+    sBody.textContent = card.spec;
+    sBody.classList.remove('empty');
+  } else {
+    sBody.textContent = 'No spec yet. Click Edit to add one.';
+    sBody.classList.add('empty');
+  }
+  sPri.className = 'priority-pill ' + card.priority.toLowerCase();
+  sPri.querySelector('[data-text]').textContent = card.priority;
+  sCol.textContent = COL_LABELS[card.col] || card.col;
+  specModal.classList.add('show');
+}
+function closeSpec(){ specModal.classList.remove('show'); specViewing = null; }
+
+sCloseBtn.addEventListener('click', closeSpec);
+specModal.addEventListener('click', e=>{ if(e.target===specModal) closeSpec(); });
+sEditBtn.addEventListener('click', ()=>{
+  const c = state.find(x=>x.id===specViewing);
+  closeSpec();
+  if(c) openModal(c);
+});
+
+document.getElementById('addBtn').addEventListener('click', ()=>openModal(null));
+document.querySelectorAll('[data-add]').forEach(b=>{
+  b.addEventListener('click', ()=>openModal(null, b.getAttribute('data-add')));
+});
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
+document.addEventListener('keydown', e=>{
+  if(e.key !== 'Escape') return;
+  if(modal.classList.contains('show')) closeModal();
+  else if(specModal.classList.contains('show')) closeSpec();
+});
+
+document.getElementById('saveBtn').addEventListener('click', ()=>{
+  const name = fName.value.trim();
+  if(!name) { fName.focus(); return; }
+  const desc = fDesc.value.trim();
+  const spec = fSpec.value;
+  const priority = fPri.value;
+  const col = fCol.value;
+  if(editingId){
+    const c = state.find(x=>x.id===editingId);
+    if(c){ c.name=name; c.desc=desc; c.spec=spec; c.priority=priority; c.col=col; }
+  } else {
+    state.push({id: nextId(), name, desc, spec, priority, col});
+  }
+  save(); render(); closeModal();
+});
+
+document.getElementById('resetBtn').addEventListener('click', async ()=>{
+  try{
+    state = await fetchRoadmap();
+    render();
+  }catch(e){ console.error(e); alert('Could not reload from Notion: ' + e.message); }
+});
+
+(async () => {
+  render(); // empty board first so layout is up
+  try {
+    state = await fetchRoadmap();
+    render();
+  } catch (e) {
+    console.error('falling back to defaults', e);
+    state = JSON.parse(JSON.stringify(DEFAULT_CARDS));
+    render();
+  }
+})();
+</script>
+</body>
+</html>
