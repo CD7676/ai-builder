@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI Builder Plan — Chris Detloff</title>
+<title>AI Builder Plan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -27,6 +27,10 @@
     --sans:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;
     --serif:'Fraunces',ui-serif,Georgia,serif;
   }
+  /* private/public conditional rendering — hidden by default, revealed when probe confirms private deploy */
+  [data-private-hide]{display:none}
+  html.is-private [data-private-hide]{display:revert}
+  html.is-private [data-public-hide]{display:none}
   *{box-sizing:border-box}
   html,body{background:var(--bg);color:var(--text);font-family:var(--sans);margin:0;padding:0;line-height:1.55;font-size:15px;font-weight:400;-webkit-font-smoothing:antialiased}
   body{background-image:radial-gradient(ellipse 70% 50% at 50% -5%,rgba(217,119,87,0.10),transparent 70%);min-height:100vh}
@@ -189,19 +193,26 @@
   <div class="hero stagger">
     <div class="hero-left">
       <span class="label">Builder</span>
-      <h1 class="name">Chris Detloff</h1>
-      <p class="role">Technology PE Senior Associate at Partners Group<br>Based in New York City</p>
+      <h1 class="name" data-private-hide>Chris Detloff</h1>
+      <h1 class="name" data-public-hide>AI Builder</h1>
+      <p class="role" data-private-hide>Technology PE Senior Associate at Partners Group<br>Based in New York City</p>
+      <p class="role" data-public-hide>Workflows, agents, and tools shipped with Claude Code.</p>
       <p class="date">April 21, 2026</p>
     </div>
 
-    <div class="goal-card">
+    <div class="goal-card" data-private-hide>
       <span class="label">#1 priority — from CLAUDE.md</span>
       <p class="goal-text">Learn how to build with <em>AI</em>. Go from consumer to builder — professionally, with deal workflow automation and analysis tools, and personally, with side projects and prototyping.</p>
+    </div>
+
+    <div class="goal-card" data-public-hide>
+      <span class="label">What this is</span>
+      <p class="goal-text">A running portfolio of <em>automations</em> built with Claude Code — what shipped, what's queued, and the system that turns one-off prototypes into compounding tools.</p>
     </div>
   </div>
 </header>
 
-<section>
+<section data-private-hide>
   <div class="section-head">
     <span class="num">01</span>
     <h2>What the time audit said</h2>
@@ -227,10 +238,10 @@
     </div>
   </div>
 
-  <a class="audit-link" href="time-audit.html" data-private-hide>Full Time Audit <span class="arrow">→</span></a>
+  <a class="audit-link" href="time-audit.html">Full Time Audit <span class="arrow">→</span></a>
 </section>
 
-<section>
+<section data-private-hide>
   <div class="section-head">
     <span class="num">02</span>
     <h2>What I'm building</h2>
@@ -403,7 +414,7 @@
     <h2>Sprint 2 &mdash; what shipped</h2>
     <span class="rule"></span>
   </div>
-  <p class="section-lede">Section 02's plan is now scaffolded end-to-end &mdash; a live dashboard wired to a Notion backend, plus one new agent on top that reads the roadmap and tells me what to ship next.</p>
+  <p class="section-lede">The roadmap is now scaffolded end-to-end &mdash; a live dashboard wired to a Notion backend, plus one new agent on top that reads the roadmap and surfaces what to ship next.</p>
 
   <div class="builds stagger">
 
@@ -462,11 +473,11 @@
       <dl class="build-rows">
         <div class="build-row">
           <dt>What's live</dt>
-          <dd class="dd-muted">Two scheduled Claude Code <code>/schedule</code> remote triggers running on Anthropic infrastructure &mdash; no laptop required. <strong>Evening Digest</strong> (8:10&nbsp;PM ET, Sun&ndash;Thu) reads the day's inbox via the first-party Gmail MCP connector, categorizes every thread against ~60 label rules, drafts voiced replies for personal recruiter / coach / church outreach, surfaces unsubscribe candidates with a 48h grace window, and emails me an HTML digest. <strong>Morning Cleanup</strong> (10&nbsp;AM Tue&ndash;Fri, 12&nbsp;PM Mon) auto-unsubscribes candidates that survived the grace window via <code>WebFetch</code>, then labels and archives every unstarred <code>Auto-Digest</code> thread.</dd>
+          <dd class="dd-muted">Two scheduled Claude Code <code>/schedule</code> remote triggers running on Anthropic infrastructure &mdash; no laptop required. <strong>Evening Digest</strong> (8:10&nbsp;PM ET, Sun&ndash;Thu) reads the day's inbox via the first-party Gmail MCP connector, categorizes every thread against ~60 label rules, drafts voiced replies for personal correspondence, surfaces unsubscribe candidates with a 48h grace window, and emails an HTML digest. <strong>Morning Cleanup</strong> (10&nbsp;AM Tue&ndash;Fri, 12&nbsp;PM Mon) auto-unsubscribes candidates that survived the grace window via <code>WebFetch</code>, then labels and archives every unstarred <code>Auto-Digest</code> thread.</dd>
         </div>
         <div class="build-row">
           <dt>How it works</dt>
-          <dd>Star-to-keep is the only gesture I make &mdash; anything I don't star gets labeled, archived, or unsubscribed on the next pass. An <code>Auto-Digest</code> marker label scopes cleanup to threads the digest has already touched, which protects my 14k legacy inbox from accidental archiving. Voice rules are duplicated inline from my <code>chris-email-voice</code> skill because remote <code>/schedule</code> triggers can't invoke local user skills. <strong>Drafts only &mdash; nothing is sent without review.</strong></dd>
+          <dd>Star-to-keep is the only gesture &mdash; anything unstarred gets labeled, archived, or unsubscribed on the next pass. An <code>Auto-Digest</code> marker label scopes cleanup to threads the digest has already touched, which protects the 14k legacy inbox from accidental archiving. Voice rules are duplicated inline from a local <code>email-voice</code> skill because remote <code>/schedule</code> triggers can't invoke local user skills. <strong>Drafts only &mdash; nothing is sent without review.</strong></dd>
         </div>
       </dl>
       <div class="card-actions">
@@ -529,8 +540,8 @@
       <div class="flow">
         <div class="flow-step"><span class="flow-num">01</span><div class="flow-body"><strong><code>/schedule</code> cron fires at 8:10 PM ET (Sun&ndash;Thu)</strong><span>Anthropic infrastructure spawns the agent &mdash; no laptop required. Friday and Saturday evenings are intentionally skipped.</span></div></div>
         <div class="flow-step"><span class="flow-num">02</span><div class="flow-body"><strong>Search threads</strong><span>Gmail MCP <code>search_threads</code> with <code>in:inbox newer_than:2d -label:"Auto-Digest"</code>. Idempotent re-runs and a 24h cushion against missed days.</span></div></div>
-        <div class="flow-step"><span class="flow-num">03</span><div class="flow-body"><strong>Categorize each thread</strong><span>Match against ~60 routing rules in priority order, first match wins. Apply the <code>Auto-Digest</code> marker only &mdash; the category label and archive happen at cleanup, after I've had a chance to star.</span></div></div>
-        <div class="flow-step"><span class="flow-num">04</span><div class="flow-body"><strong>Draft voiced replies</strong><span>For non-Jobs threads where someone other than me sent the most recent message: draft a reply in my voice using register-aware rules from the <code>chris-email-voice</code> skill. Drafts only &mdash; never auto-sent.</span></div></div>
+        <div class="flow-step"><span class="flow-num">03</span><div class="flow-body"><strong>Categorize each thread</strong><span>Match against ~60 routing rules in priority order, first match wins. Apply the <code>Auto-Digest</code> marker only &mdash; the category label and archive happen at cleanup, after a chance to star.</span></div></div>
+        <div class="flow-step"><span class="flow-num">04</span><div class="flow-body"><strong>Draft voiced replies</strong><span>For non-Jobs threads where someone else sent the most recent message: draft a reply using register-aware rules from a local <code>email-voice</code> skill. Drafts only &mdash; never auto-sent.</span></div></div>
         <div class="flow-step"><span class="flow-num">05</span><div class="flow-body"><strong>Identify unsubscribe candidates</strong><span>Newsletters and marketing-tone Reviewed/Education threads get <code>Unsub-Suggested</code>. 48-hour grace window: candidates must appear unstarred in two consecutive digests before any irreversible action.</span></div></div>
         <div class="flow-step"><span class="flow-num">06</span><div class="flow-body"><strong>Build the HTML digest</strong><span>Sections for Needs Your Attention, Already Addressed, per-label groups, Unsubscribe Suggestions (split into final-notice and first-suggestion), and Jobs.</span></div></div>
         <div class="flow-step"><span class="flow-num">07</span><div class="flow-body"><strong>Create draft, optionally auto-send</strong><span>First-party connector creates the digest draft. If a community send-capable server is configured, it sends; otherwise I send with one click.</span></div></div>
@@ -549,7 +560,7 @@
 
     <div class="modal-section">
       <h3>What triggers a draft</h3>
-      <p class="muted">A thread gets a voiced reply draft only when (a) it isn't categorized as Jobs (Jobs are always automated alerts), (b) someone other than me sent the most recent message, and (c) the email reads like personal outreach worth a reply &mdash; boutique recruiter, coach, friend, vendor mid-thread, church coordination. Marketing, alerts, and one-way newsletters never get drafted.</p>
+      <p class="muted">A thread gets a voiced reply draft only when (a) it isn't categorized as Jobs (Jobs are always automated alerts), (b) someone else sent the most recent message, and (c) the email reads like personal correspondence worth a reply. Marketing, alerts, and one-way newsletters never get drafted.</p>
     </div>
   </div>
 </div>
@@ -566,7 +577,7 @@
         <li><strong>Claude Code <code>/schedule</code></strong> &mdash; remote triggers running on Anthropic infrastructure. No local machine required.</li>
         <li><strong>First-party Anthropic Gmail MCP connector</strong> &mdash; <code>search_threads</code>, <code>get_thread</code>, <code>create_draft</code>, <code>list_labels</code>, <code>label_thread</code>, <code>unlabel_thread</code>. Auth handled by the connector once enabled in Claude.</li>
         <li><strong><code>WebFetch</code></strong> &mdash; one-click unsubscribe execution for candidates that survive the 48-hour grace window.</li>
-        <li><strong><code>chris-email-voice</code> Claude Code skill</strong> &mdash; canonical voice rules for reply drafts. Duplicated inline in the digest prompt because remote <code>/schedule</code> triggers can't invoke local user skills.</li>
+        <li><strong><code>email-voice</code> Claude Code skill</strong> &mdash; canonical voice rules for reply drafts. Duplicated inline in the digest prompt because remote <code>/schedule</code> triggers can't invoke local user skills.</li>
         <li><strong>Community Gmail MCP server (optional)</strong> &mdash; <code>taylorwilsdon/google_workspace_mcp</code> adds auto-send. Without it, the digest falls back to draft-only.</li>
       </ul>
     </div>
@@ -598,12 +609,9 @@
 
 <script>
 (function(){
-  var els = document.querySelectorAll('[data-private-hide]');
-  if (!els.length) return;
   fetch('/time-audit.html', { method: 'HEAD', cache: 'no-store' })
-    .then(function(r){ if (!r.ok) hide(); })
-    .catch(hide);
-  function hide(){ els.forEach(function(el){ el.style.display = 'none'; }); }
+    .then(function(r){ if (r.ok) document.documentElement.classList.add('is-private'); })
+    .catch(function(){});
 })();
 </script>
 </body>
