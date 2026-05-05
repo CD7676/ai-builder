@@ -4,6 +4,10 @@ export const config = {
 
 const PRIVATE_PATHS = ['/time-audit', '/time-audit.html'];
 
+const PUBLIC_REWRITES = {
+  '/ai-builder-plan.html': '/ai-builder-plan-public.html',
+};
+
 function isPrivatePath(pathname) {
   return PRIVATE_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'));
 }
@@ -16,6 +20,13 @@ export default function middleware(request) {
       return new Response('Not Found', {
         status: 404,
         headers: { 'Content-Type': 'text/plain' },
+      });
+    }
+    const rewriteTo = PUBLIC_REWRITES[pathname];
+    if (rewriteTo) {
+      const target = new URL(rewriteTo, request.url);
+      return new Response(null, {
+        headers: { 'x-middleware-rewrite': target.toString() },
       });
     }
     return;
