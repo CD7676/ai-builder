@@ -253,7 +253,7 @@
 </div>
 
 <footer>
-  <div style="margin-bottom:14px"><a href="/">Dashboard</a> &middot; <a href="/ai-builder-plan.html">Plan</a> &middot; <a href="/time-audit.html">Time audit</a></div>
+  <div style="margin-bottom:14px"><a href="/">Dashboard</a> &middot; <a href="/ai-builder-plan.html">Plan</a><span data-private-hide> &middot; <a href="/time-audit.html">Time audit</a></span></div>
   AI Builder Automation Portfolio <span class="sep">|</span> Roadmap
 </footer>
 
@@ -687,6 +687,17 @@ document.getElementById('resetBtn').addEventListener('click', async ()=>{
     state = JSON.parse(JSON.stringify(DEFAULT_CARDS));
     render();
   }
+})();
+</script>
+
+<script>
+(function(){
+  var els = document.querySelectorAll('[data-private-hide]');
+  if (!els.length) return;
+  fetch('/time-audit.html', { method: 'HEAD', cache: 'no-store' })
+    .then(function(r){ if (!r.ok) hide(); })
+    .catch(hide);
+  function hide(){ els.forEach(function(el){ el.style.display = 'none'; }); }
 })();
 </script>
 </body>

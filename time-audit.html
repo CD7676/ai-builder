@@ -4,142 +4,261 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Time Audit — Chris Detloff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0b0d12;
-    --bg-card:#13161d;
-    --bg-elev:#1a1e27;
-    --line:#262b36;
-    --text:#e6e8ee;
-    --muted:#8a92a3;
-    --dim:#5a6273;
-    --accent:#7aa2f7;
-    --accent-2:#bb9af7;
-    --good:#9ece6a;
-    --warn:#e0af68;
-    --bad:#f7768e;
-    --mono:'SF Mono','JetBrains Mono','Consolas',ui-monospace,monospace;
-    --sans:-apple-system,'Segoe UI','Inter',system-ui,sans-serif;
+    --bg:#0a0908;
+    --bg-card:#131110;
+    --bg-elev:#1a1714;
+    --line:#2a2520;
+    --line-soft:#1f1b17;
+    --text:#f0ece4;
+    --muted:#8a847a;
+    --dim:#55504a;
+    --faint:#33302c;
+    --accent:#d97757;
+    --accent-dim:#8b4a2e;
+    --accent-soft:rgba(217,119,87,.12);
+    --sage:#9ecd80;
+    --sage-dim:rgba(158,205,128,.12);
+    --warn:#e0b05a;
+    --warn-dim:rgba(224,176,90,.10);
+    --bad:#d96757;
+    --bad-dim:rgba(217,103,87,.10);
+    --mono:'JetBrains Mono',ui-monospace,'Consolas',monospace;
+    --sans:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;
+    --serif:'Fraunces',ui-serif,Georgia,serif;
   }
   *{box-sizing:border-box}
-  html,body{background:var(--bg);color:var(--text);font-family:var(--sans);margin:0;padding:0;line-height:1.55;font-size:15px}
-  .wrap{max-width:1080px;margin:0 auto;padding:48px 32px 96px}
-  header{border-bottom:1px solid var(--line);padding-bottom:32px;margin-bottom:48px}
-  header .crumb{color:var(--muted);font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px}
-  header h1{font-size:38px;font-weight:600;margin:0 0 12px;letter-spacing:-0.02em}
-  header .meta{color:var(--muted);font-size:14px;display:flex;gap:24px;flex-wrap:wrap}
-  header .goal{margin-top:24px;padding:18px 22px;background:var(--bg-card);border-left:3px solid var(--accent);border-radius:4px}
-  header .goal .label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px}
-  header .goal .text{font-size:17px;color:var(--text)}
+  html,body{background:var(--bg);color:var(--text);font-family:var(--sans);margin:0;padding:0;line-height:1.55;font-size:15px;font-weight:400;-webkit-font-smoothing:antialiased}
+  body{background-image:radial-gradient(ellipse 70% 50% at 50% -5%,rgba(217,119,87,0.10),transparent 70%);min-height:100vh}
+  .wrap{max-width:1100px;margin:0 auto;padding:56px 32px 96px;position:relative}
 
-  section{margin-bottom:64px}
-  h2{font-size:22px;font-weight:600;margin:0 0 8px;letter-spacing:-0.01em}
-  h2 .num{color:var(--dim);font-family:var(--mono);font-weight:400;margin-right:12px;font-size:18px}
-  .lede{color:var(--muted);margin:0 0 24px;font-size:14px;max-width:78ch}
+  .label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:500}
+  .mono{font-family:var(--mono)}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-dim);transition:border-color .2s,color .2s}
+  a:hover{color:var(--text);border-bottom-color:var(--accent)}
+  code{font-family:var(--mono);font-size:12px;background:var(--bg-elev);color:var(--text);padding:1px 7px;border-radius:2px;border:1px solid var(--line)}
+  em{font-style:italic}
 
-  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-  .stat{background:var(--bg-card);padding:18px 20px;border-radius:6px;border:1px solid var(--line)}
-  .stat .v{font-size:24px;font-weight:600;letter-spacing:-0.02em;font-family:var(--mono)}
-  .stat .v.warn{color:var(--warn)} .stat .v.bad{color:var(--bad)} .stat .v.good{color:var(--good)} .stat .v.accent{color:var(--accent)}
-  .stat .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .stagger > *{animation:fadeUp .6s cubic-bezier(.2,.7,.2,1) both}
+  .stagger > *:nth-child(1){animation-delay:.05s}
+  .stagger > *:nth-child(2){animation-delay:.13s}
+  .stagger > *:nth-child(3){animation-delay:.21s}
+  .stagger > *:nth-child(4){animation-delay:.29s}
+  .stagger > *:nth-child(5){animation-delay:.37s}
+  .stagger > *:nth-child(6){animation-delay:.45s}
 
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  @media(max-width:780px){.grid-2,.grid-3,.stat-row{grid-template-columns:1fr}}
+  header{padding-bottom:48px;margin-bottom:40px;border-bottom:1px solid var(--line)}
+  .crumb{display:flex;gap:14px;align-items:center;margin-bottom:40px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+  .crumb .pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2.4s ease-in-out infinite}
+  .crumb .sep{color:var(--faint)}
+  .crumb strong{color:var(--text);font-weight:500}
 
-  .card{background:var(--bg-card);border:1px solid var(--line);border-radius:6px;padding:22px}
-  .card h3{margin:0 0 16px;font-size:15px;color:var(--text);font-weight:600}
-  .card.pad-tight{padding:18px 20px}
+  .hero{display:grid;grid-template-columns:0.85fr 1.15fr;gap:56px;align-items:start}
+  .hero-left .label{margin-bottom:14px;display:block}
+  .hero-left .name{font-family:var(--serif);font-weight:300;font-size:38px;letter-spacing:-.02em;margin:0 0 14px;color:var(--text);line-height:1.15}
+  .hero-left .name em{font-style:italic;color:var(--accent);font-weight:400}
+  .hero-left .meta{font-family:var(--mono);font-size:12px;color:var(--dim);margin:0;letter-spacing:.04em;display:flex;gap:14px;flex-wrap:wrap}
+  .hero-left .meta .sep{color:var(--faint)}
 
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  th{text-align:left;color:var(--muted);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.08em;padding:8px 0;border-bottom:1px solid var(--line)}
-  td{padding:10px 0;border-bottom:1px solid var(--line);vertical-align:top}
-  td:first-child{color:var(--text)}
-  td.num{font-family:var(--mono);text-align:right;color:var(--muted)}
-  tr:last-child td{border-bottom:none}
+  .goal-card{border-left:2px solid var(--accent);padding:2px 0 2px 26px}
+  .goal-card .label{margin-bottom:16px;display:block;color:var(--accent)}
+  .goal-card .goal-text{font-family:var(--serif);font-weight:300;font-size:24px;line-height:1.32;letter-spacing:-.015em;color:var(--text);font-style:italic;margin:0}
+  .goal-card .goal-text em{font-style:normal;color:var(--accent);font-weight:400}
 
-  .bar{height:6px;background:var(--bg-elev);border-radius:3px;overflow:hidden;margin-top:6px}
-  .bar > span{display:block;height:100%;background:var(--accent);border-radius:3px}
-  .bar > span.acc-2{background:var(--accent-2)}
+  @media(max-width:820px){
+    .hero{grid-template-columns:1fr;gap:36px}
+    .hero-left .name{font-size:30px}
+    .goal-card .goal-text{font-size:20px}
+  }
 
-  .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
-  .pill.quick{background:rgba(158,206,106,.12);color:var(--good);border:1px solid rgba(158,206,106,.3)}
-  .pill.med{background:rgba(224,175,104,.12);color:var(--warn);border:1px solid rgba(224,175,104,.3)}
-  .pill.big{background:rgba(247,118,142,.12);color:var(--bad);border:1px solid rgba(247,118,142,.3)}
-  .pill.draft{background:rgba(122,162,247,.10);color:var(--accent);border:1px solid rgba(122,162,247,.3);margin-left:8px}
+  /* preface callout (sits between header and section 01) */
+  .preface{background:var(--warn-dim);border:1px solid rgba(224,176,90,.22);border-left:2px solid var(--warn);border-radius:3px;padding:22px 26px;margin-bottom:64px;font-size:14px;line-height:1.65;color:var(--text)}
+  .preface .label{margin-bottom:10px;display:block;color:var(--warn)}
+  .preface p{margin:0;color:var(--muted)}
+  .preface strong{color:var(--text);font-weight:500}
 
-  .auto-card{background:var(--bg-card);border:1px solid var(--line);border-radius:6px;padding:24px;margin-bottom:16px;position:relative}
-  .auto-card .header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px}
-  .auto-card .outcome{font-size:17px;font-weight:600;letter-spacing:-0.01em;flex:1}
-  .auto-card .meta-row{display:flex;gap:8px;align-items:center;flex-shrink:0}
-  .auto-card .reclaim{font-family:var(--mono);font-size:13px;color:var(--good);background:rgba(158,206,106,.08);padding:4px 10px;border-radius:4px;border:1px solid rgba(158,206,106,.2)}
-  .auto-card dl{margin:0;display:grid;grid-template-columns:140px 1fr;gap:10px 18px}
-  .auto-card dt{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;padding-top:2px}
-  .auto-card dd{margin:0;color:var(--text);font-size:14px}
+  section{margin-bottom:72px}
+  .section-head{display:flex;align-items:baseline;gap:18px;margin-bottom:10px}
+  .section-head .num{font-family:var(--mono);color:var(--dim);font-size:13px;font-weight:400;letter-spacing:.08em}
+  .section-head h2{font-family:var(--mono);font-size:13px;font-weight:500;margin:0;text-transform:uppercase;letter-spacing:.18em;color:var(--text)}
+  .section-head .rule{flex:1;height:1px;background:var(--line-soft);margin-left:12px;align-self:center}
+  .section-lede{font-size:15px;color:var(--muted);margin:0 0 32px;max-width:68ch;line-height:1.65}
 
-  .callout{background:rgba(247,118,142,.06);border-left:3px solid var(--bad);padding:14px 18px;border-radius:4px;margin:18px 0;font-size:14px}
-  .callout.warn{background:rgba(224,175,104,.06);border-left-color:var(--warn)}
-  .callout.info{background:rgba(122,162,247,.06);border-left-color:var(--accent)}
-  .callout strong{color:var(--text)}
+  /* 4-up stat tiles */
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+  .stat-tile{background:var(--bg-card);border:1px solid var(--line);border-radius:3px;padding:22px 22px 20px;transition:border-color .25s}
+  .stat-tile:hover{border-color:var(--accent-dim)}
+  .stat-tile .v{font-family:var(--serif);font-weight:300;font-size:34px;letter-spacing:-.02em;line-height:1;color:var(--text)}
+  .stat-tile .v.accent{color:var(--accent)}
+  .stat-tile .v.warn{color:var(--warn)}
+  .stat-tile .v.bad{color:var(--bad)}
+  .stat-tile .v.sage{color:var(--sage)}
+  .stat-tile .l{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:14px;line-height:1.45}
+  @media(max-width:980px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.stat-row{grid-template-columns:1fr}}
 
-  .sources{font-family:var(--mono);font-size:12px;color:var(--muted)}
-  .sources .row{display:grid;grid-template-columns:170px 1fr 110px;gap:18px;padding:8px 0;border-bottom:1px solid var(--line)}
-  .sources .row:last-child{border-bottom:none}
-  .sources .ok{color:var(--good)}
-  .sources .partial{color:var(--warn)}
-  .sources .missing{color:var(--bad)}
+  /* generic insight card (replaces old .card) */
+  .insight{background:var(--bg-card);border:1px solid var(--line);border-radius:3px;padding:24px 24px 22px;transition:border-color .25s}
+  .insight:hover{border-color:var(--accent-dim)}
+  .insight .tag{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.16em;margin-bottom:18px;display:block;text-transform:uppercase}
+  .insight h3{font-family:var(--mono);font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.16em;margin:0 0 18px;color:var(--text)}
+  .insight p{margin:0 0 12px;font-size:13.5px;color:var(--muted);line-height:1.65}
+  .insight p:last-child{margin-bottom:0}
+  .insight p.note{font-size:12.5px;color:var(--dim);margin-top:14px}
 
-  footer{border-top:1px solid var(--line);padding-top:24px;margin-top:48px;color:var(--muted);font-size:12px;font-family:var(--mono);text-align:center;letter-spacing:.06em}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .grid-2 + .grid-2,.grid-2 + .grid-3,.grid-3 + .grid-2{margin-top:18px}
+  @media(max-width:820px){.grid-2,.grid-3{grid-template-columns:1fr}}
 
-  p{margin:0 0 14px;color:var(--text)}
-  p.muted{color:var(--muted)}
-  ul.tight{margin:8px 0 0;padding-left:18px;color:var(--text)}
-  ul.tight li{margin:4px 0}
-  .name{color:var(--accent);font-weight:500}
-  code{font-family:var(--mono);font-size:12px;background:var(--bg-elev);padding:1px 6px;border-radius:3px;color:var(--accent-2)}
+  /* compact data table inside insight cards */
+  table.data{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.data th{text-align:left;font-family:var(--mono);font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);padding:0 0 10px;border-bottom:1px solid var(--line-soft)}
+  table.data td{padding:10px 0;border-bottom:1px solid var(--line-soft);vertical-align:top;color:var(--text);line-height:1.5}
+  table.data td.num{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--muted);white-space:nowrap;padding-left:12px}
+  table.data tr:last-child td{border-bottom:none}
+  table.data .name{color:var(--accent);font-weight:500}
+
+  ul.tight{margin:0;padding-left:20px;color:var(--text);font-size:13.5px;line-height:1.7}
+  ul.tight li{margin-bottom:8px}
+  ul.tight li:last-child{margin-bottom:0}
+  ul.tight strong{color:var(--text);font-weight:500}
+
+  /* diagnostic mini-card (3-up in section 02) */
+  .diag{background:var(--bg-card);border:1px solid var(--line);border-radius:3px;padding:24px 22px 22px;transition:border-color .25s}
+  .diag:hover{border-color:var(--accent-dim)}
+  .diag .v{font-family:var(--serif);font-weight:300;font-size:28px;letter-spacing:-.015em;line-height:1;color:var(--text)}
+  .diag .v.warn{color:var(--warn)}
+  .diag .v.bad{color:var(--bad)}
+  .diag .l{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:12px;line-height:1.45}
+  .diag p{font-size:13px;color:var(--muted);line-height:1.6;margin:14px 0 0}
+
+  /* build-card (used in sections 03 and 04) — same vocabulary as plan page */
+  .builds{display:flex;flex-direction:column;gap:14px}
+  .build-card{background:var(--bg-card);border:1px solid var(--line);border-radius:3px;padding:28px 32px 26px;position:relative;transition:border-color .25s,background .25s}
+  .build-card:hover{border-color:var(--accent-dim);background:#151210}
+
+  .build-spec{display:flex;align-items:center;gap:14px;margin-bottom:20px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;flex-wrap:wrap}
+  .build-spec .id{color:var(--accent);font-weight:500}
+  .build-spec .sep{color:var(--faint)}
+  .build-spec .effort{color:var(--muted);font-weight:500}
+  .build-spec .effort.quick{color:var(--sage)}
+  .build-spec .effort.med{color:var(--warn)}
+  .build-spec .effort.big{color:var(--accent)}
+  .build-spec .hours{color:var(--muted)}
+  .build-spec .hours strong{color:var(--text);font-weight:600;letter-spacing:.04em}
+  .build-spec .draft{margin-left:auto;color:var(--dim);display:inline-flex;align-items:center;gap:8px;font-weight:500}
+  .build-spec .draft .bullet{width:6px;height:6px;border:1px solid var(--dim);border-radius:50%;display:inline-block}
+
+  .build-outcome{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1.3;letter-spacing:-.015em;margin:0 0 22px;color:var(--text);max-width:54ch}
+
+  .build-rows{border-top:1px solid var(--line-soft);padding-top:4px}
+  .build-row{display:grid;grid-template-columns:120px 1fr;gap:24px;padding:14px 0;align-items:start}
+  .build-row + .build-row{border-top:1px solid var(--line-soft)}
+  .build-row dt{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);padding-top:3px;font-weight:500}
+  .build-row dd{margin:0;font-size:14px;line-height:1.65;color:var(--text)}
+  .build-row dd.dd-muted{color:var(--muted)}
+  .build-row dd strong{color:var(--accent);font-weight:500}
+  .build-row dd em{color:var(--text)}
+
+  @media(max-width:820px){
+    .build-card{padding:22px 22px 20px}
+    .build-outcome{font-size:20px}
+    .build-row{grid-template-columns:1fr;gap:6px}
+  }
+
+  /* mid-section info / warn callouts */
+  .callout{border-radius:3px;padding:18px 22px;margin:24px 0 0;font-size:13.5px;line-height:1.65;color:var(--text)}
+  .callout.info{background:var(--accent-soft);border:1px solid rgba(217,119,87,.22);border-left:2px solid var(--accent)}
+  .callout.warn{background:var(--warn-dim);border:1px solid rgba(224,176,90,.22);border-left:2px solid var(--warn)}
+  .callout strong{color:var(--text);font-weight:500}
+  .callout .label{display:inline-block;margin-right:8px;color:var(--accent)}
+  .callout.warn .label{color:var(--warn)}
+
+  /* data sources card (section 05) */
+  .sources{background:var(--bg-card);border:1px solid var(--line);border-radius:3px;padding:8px 28px}
+  .sources-row{display:grid;grid-template-columns:200px 1fr 140px;gap:24px;padding:18px 0;align-items:start;border-bottom:1px solid var(--line-soft)}
+  .sources-row:last-child{border-bottom:none}
+  .sources-row .src-name{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--text);font-weight:500}
+  .sources-row .src-status{font-size:13px;line-height:1.55;color:var(--text)}
+  .sources-row .src-status.ok{color:var(--text)}
+  .sources-row .src-status.partial{color:var(--warn)}
+  .sources-row .src-status.missing{color:var(--bad)}
+  .sources-row .src-window{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);text-align:right;padding-top:2px}
+  .sources-note{font-size:12.5px;color:var(--dim);margin:18px 0 0;line-height:1.65;max-width:78ch}
+  @media(max-width:820px){
+    .sources{padding:8px 22px}
+    .sources-row{grid-template-columns:1fr;gap:6px}
+    .sources-row .src-window{text-align:left}
+  }
+
+  footer{border-top:1px solid var(--line);padding-top:28px;margin-top:64px;font-family:var(--mono);font-size:11px;color:var(--dim);text-align:center;letter-spacing:.16em;text-transform:uppercase}
+  footer .sep{color:var(--faint);margin:0 14px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <header>
-  <div class="crumb">AI Builder Automation Portfolio · Time Audit</div>
-  <h1>Where my hours actually go</h1>
-  <div class="meta">
-    <span>Chris Detloff</span>
-    <span>·</span>
-    <span>April 21, 2026</span>
-    <span>·</span>
-    <span>Window: Apr 1 – Apr 21, 2026</span>
+  <div class="crumb">
+    <span class="pulse"></span>
+    <strong>AI Builder Automation Portfolio</strong>
+    <span class="sep">/</span>
+    <span>Time Audit</span>
   </div>
-  <div class="goal">
-    <div class="label">#1 priority from CLAUDE.md</div>
-    <div class="text">Learn how to build with AI. Go from consumer to builder, both professionally (deal workflow automation, analysis tools) and personally.</div>
+
+  <div class="hero stagger">
+    <div class="hero-left">
+      <span class="label">Audit window</span>
+      <h1 class="name">Where my hours <em>actually</em> go.</h1>
+      <p class="meta">
+        <span>Chris Detloff</span>
+        <span class="sep">·</span>
+        <span>April 21, 2026</span>
+        <span class="sep">·</span>
+        <span>Apr 1 – Apr 21, 2026</span>
+      </p>
+    </div>
+
+    <div class="goal-card">
+      <span class="label">#1 priority — from CLAUDE.md</span>
+      <p class="goal-text">Learn how to build with <em>AI</em>. Go from consumer to builder, both professionally — deal workflow automation, analysis tools — and personally.</p>
+    </div>
   </div>
 </header>
 
-<div class="callout warn">
-  <strong>Read this before everything else.</strong> The Windows app-usage and browser-history data on this <code>claude-dev</code> account is sparse — the machine itself is new (Activities DB has 29 rows from one day, Edge history starts April 20). The rich signal in this audit comes from <strong>Gmail</strong>, which has a clean 30-day window and tells a much clearer story than any clock-time number could. Treat the app/browser counts as directional only. The email patterns and the diagnostics built on them are reliable.
+<div class="preface">
+  <span class="label">Read this before everything else</span>
+  <p>The Windows app-usage and browser-history data on this <code>claude-dev</code> account is sparse — the machine itself is new (Activities DB has 29 rows from one day, Edge history starts April 20). The rich signal in this audit comes from <strong>Gmail</strong>, which has a clean 30-day window and tells a much clearer story than any clock-time number could. Treat the app and browser counts as directional only. The email patterns and the diagnostics built on them are reliable.</p>
 </div>
 
-<!-- ============================================================ -->
 <section>
-  <h2><span class="num">01</span>How I actually spend my time</h2>
-  <p class="lede">Where the data is clean (Gmail), here is the picture. Where it's thin (apps, browser, calendar, work Slack), I say so.</p>
+  <div class="section-head">
+    <span class="num">01</span>
+    <h2>How I actually spend my time</h2>
+    <span class="rule"></span>
+  </div>
+  <p class="section-lede">Where the data is clean (Gmail), here is the picture. Where it's thin (apps, browser, calendar, work Slack), I say so.</p>
 
-  <div class="stat-row">
-    <div class="stat"><div class="v accent">~57</div><div class="l">Threads I sent (30d)</div></div>
-    <div class="stat"><div class="v warn">15+</div><div class="l">Active recruiter touchpoints</div></div>
-    <div class="stat"><div class="v">5–10</div><div class="l">Job alert emails / day</div></div>
-    <div class="stat"><div class="v good">7</div><div class="l">Active networking conversations</div></div>
+  <div class="stat-row stagger">
+    <div class="stat-tile"><div class="v accent">~57</div><div class="l">Threads I sent (30d)</div></div>
+    <div class="stat-tile"><div class="v warn">15+</div><div class="l">Active recruiter touchpoints</div></div>
+    <div class="stat-tile"><div class="v">5–10</div><div class="l">Job-alert emails per day</div></div>
+    <div class="stat-tile"><div class="v sage">7</div><div class="l">Active networking conversations</div></div>
   </div>
 
-  <div class="grid-2">
-    <div class="card">
+  <div class="grid-2 stagger">
+    <div class="insight">
       <h3>Gmail — what I send</h3>
-      <table>
+      <table class="data">
         <tr><th>Pattern</th><th class="num">Volume</th></tr>
-        <tr><td>Recruiter responses (yes/no/schedule)</td><td class="num">~20 threads</td></tr>
+        <tr><td>Recruiter responses (yes / no / schedule)</td><td class="num">~20 threads</td></tr>
         <tr><td>Coaching follow-ups (Don Eash, weekly)</td><td class="num">8+ messages</td></tr>
         <tr><td>Networking thank-yous &amp; scheduling</td><td class="num">~12</td></tr>
         <tr><td>Daily Email Digest (to myself, iterating)</td><td class="num">6+ variants</td></tr>
@@ -149,12 +268,12 @@
       </table>
     </div>
 
-    <div class="card">
+    <div class="insight">
       <h3>Gmail — what I field repeatedly</h3>
-      <table>
+      <table class="data">
         <tr><th>Source</th><th class="num">Cadence</th></tr>
         <tr><td>LinkedIn job alerts (multiple variants)</td><td class="num">3–5 / day</td></tr>
-        <tr><td>Jobright.ai &quot;top match&quot; alerts</td><td class="num">1–2 / day</td></tr>
+        <tr><td>Jobright.ai &ldquo;top match&rdquo; alerts</td><td class="num">1–2 / day</td></tr>
         <tr><td>Glassdoor / Kimble / Greville job leads</td><td class="num">~1 / day</td></tr>
         <tr><td>Recruiter inbound (HSP, SG, Search1, CPI…)</td><td class="num">2–4 / week</td></tr>
         <tr><td>Newsletters: Krugman, Wall Street Rollup, Forte Labs, VC Demystified, Substacks</td><td class="num">~5 / day</td></tr>
@@ -164,10 +283,10 @@
     </div>
   </div>
 
-  <div class="grid-2" style="margin-top:20px">
-    <div class="card">
+  <div class="grid-2 stagger">
+    <div class="insight">
       <h3>People who reach me most</h3>
-      <table>
+      <table class="data">
         <tr><th>Person / source</th><th>Why</th></tr>
         <tr><td><span class="name">Don Eash</span></td><td>Career coach, weekly cadence, recap emails</td></tr>
         <tr><td><span class="name">Henkel Search Partners</span> (Kate, Natalie, Catee, Kat)</td><td>Primary recruiter relationship, multiple roles</td></tr>
@@ -178,35 +297,35 @@
       </table>
     </div>
 
-    <div class="card">
+    <div class="insight">
       <h3>Where I'm the last step before something gets done</h3>
       <ul class="tight">
-        <li><strong>Recruiter triage:</strong> nothing moves until I respond yes/no/schedule. ~20 threads/30d.</li>
+        <li><strong>Recruiter triage:</strong> nothing moves until I respond yes / no / schedule. ~20 threads in 30 days.</li>
         <li><strong>Recruiter chase:</strong> Hyland (Alexandria) chased twice; Search1 chased before getting the rejection. I'm the one keeping pipelines warm.</li>
-        <li><strong>Coach follow-ups:</strong> I send the post-session thank-you and the &quot;here's where things shook out&quot; updates.</li>
-        <li><strong>Wedding/personal logistics:</strong> Italy passports, Church pre-engagement course inquiry, CG location coordination.</li>
-        <li><strong>AI builds:</strong> all my own — no one else iterates on the daily digest or HN digest.</li>
+        <li><strong>Coach follow-ups:</strong> I send the post-session thank-you and the &ldquo;here's where things shook out&rdquo; updates.</li>
+        <li><strong>Wedding &amp; personal logistics:</strong> Italy passports, Church pre-engagement course inquiry, CG location coordination.</li>
+        <li><strong>AI builds:</strong> all my own. No one else iterates on the daily digest or HN digest.</li>
       </ul>
     </div>
   </div>
 
-  <div class="grid-2" style="margin-top:20px">
-    <div class="card">
+  <div class="grid-2 stagger">
+    <div class="insight">
       <h3>App usage — claude-dev workstation only</h3>
-      <p class="muted" style="font-size:13px;margin-bottom:10px">29 activity records from a single day (Apr 20). Treat as setup-mode signal, not work-life signal.</p>
-      <table>
+      <p>29 activity records from a single day (Apr 20). Treat as setup-mode signal, not work-life signal.</p>
+      <table class="data" style="margin-top:14px">
         <tr><th>Signal</th><th class="num">Value</th></tr>
         <tr><td>Days of usable data</td><td class="num">1</td></tr>
-        <tr><td>ActivityType 11/12 events captured</td><td class="num">29</td></tr>
-        <tr><td>Foreground app sessions (type 5/6)</td><td class="num">0</td></tr>
+        <tr><td>ActivityType 11 / 12 events captured</td><td class="num">29</td></tr>
+        <tr><td>Foreground app sessions (type 5 / 6)</td><td class="num">0</td></tr>
       </table>
-      <p class="muted" style="font-size:12px;margin-top:14px">Likely cause: Windows Activity History captures rich foreground sessions only when the OS-level setting is enabled. This account looks new — your real workstation will have months of data once tracking is on.</p>
+      <p class="note">Likely cause: Windows Activity History only captures rich foreground sessions when the OS-level setting is enabled. This account looks new — your real workstation will have months of data once tracking is on.</p>
     </div>
 
-    <div class="card">
+    <div class="insight">
       <h3>Edge browser — last 24 hours only</h3>
-      <p class="muted" style="font-size:13px;margin-bottom:10px">79 work-hour visits, all from yesterday/today. Picture: setting up Claude + Wispr Flow.</p>
-      <table>
+      <p>79 work-hour visits, all from yesterday or today. Picture: setting up Claude + Wispr Flow.</p>
+      <table class="data" style="margin-top:14px">
         <tr><th>Domain</th><th class="num">Visits</th></tr>
         <tr><td>accounts.google.com (auth flows)</td><td class="num">29</td></tr>
         <tr><td>claude.ai</td><td class="num">11</td></tr>
@@ -214,202 +333,349 @@
         <tr><td>bing.com</td><td class="num">7</td></tr>
         <tr><td>microsoft.com / claude.com</td><td class="num">8</td></tr>
       </table>
-      <p class="muted" style="font-size:12px;margin-top:14px">Category mix: 29% AI tools, 8% docs/research, 0% comms/social/CRM. This is &quot;new dev box being configured,&quot; not a representative work day.</p>
+      <p class="note">Category mix: 29% AI tools, 8% docs / research, 0% comms / social / CRM. This is &ldquo;new dev box being configured,&rdquo; not a representative work day.</p>
     </div>
   </div>
 
   <div class="callout info">
-    <strong>Slack:</strong> only the <code>lelandaibuilders.slack.com</code> workspace is connected — that's the AI Builder bootcamp Slack, not your work Slack. Two messages in 14 days, both with Katie Ostberg about a Level 1 demo video. Your real messaging traffic isn't visible to this audit.<br><br>
-    <strong>Calendar:</strong> the Google Calendar MCP is registered but only the auth handshake is exposed — no event-fetch tool is connected. Connect it at <code>claude.ai &gt; Settings &gt; Connectors</code> and re-run to get a meeting-load picture.
+    <span class="label">Slack</span>only the <code>lelandaibuilders.slack.com</code> workspace is connected — that's the AI Builder bootcamp Slack, not your work Slack. Two messages in 14 days, both with Katie Ostberg about a Level 1 demo video. Your real messaging traffic isn't visible to this audit.
+  </div>
+  <div class="callout info">
+    <span class="label">Calendar</span>the Google Calendar MCP is registered but only the auth handshake is exposed — no event-fetch tool is connected. Connect it at <code>claude.ai &gt; Settings &gt; Connectors</code> and re-run to get a meeting-load picture.
   </div>
 </section>
 
-<!-- ============================================================ -->
 <section>
-  <h2><span class="num">02</span>Key diagnostics</h2>
-  <p class="lede">What the data points actually say. Confidence levels noted explicitly.</p>
+  <div class="section-head">
+    <span class="num">02</span>
+    <h2>Key diagnostics</h2>
+    <span class="rule"></span>
+  </div>
+  <p class="section-lede">What the data points actually say. Confidence levels noted explicitly.</p>
 
-  <div class="grid-3">
-    <div class="card pad-tight">
-      <div class="stat" style="background:transparent;border:none;padding:0">
-        <div class="v warn">N/A</div>
-        <div class="l">Context-switch rate (insufficient app data)</div>
-      </div>
-      <p class="muted" style="font-size:12px;margin-top:12px">Cannot compute reliably from 29 events on one day. Re-run after a week of Activity History.</p>
+  <div class="grid-3 stagger">
+    <div class="diag">
+      <div class="v warn">N/A</div>
+      <div class="l">Context-switch rate (insufficient app data)</div>
+      <p>Cannot compute reliably from 29 events on one day. Re-run after a week of Activity History.</p>
     </div>
-    <div class="card pad-tight">
-      <div class="stat" style="background:transparent;border:none;padding:0">
-        <div class="v warn">Unknown</div>
-        <div class="l">Meeting load vs deep-work ratio</div>
-      </div>
-      <p class="muted" style="font-size:12px;margin-top:12px">Calendar not connected. Email shows ≥6 scheduled external calls in 21 days (recruiters + networking) — likely a floor.</p>
+    <div class="diag">
+      <div class="v warn">Unknown</div>
+      <div class="l">Meeting load vs deep-work ratio</div>
+      <p>Calendar not connected. Email shows ≥6 scheduled external calls in 21 days (recruiters + networking) — likely a floor.</p>
     </div>
-    <div class="card pad-tight">
-      <div class="stat" style="background:transparent;border:none;padding:0">
-        <div class="v bad">Reactive</div>
-        <div class="l">Reactive vs proactive split (email-only proxy)</div>
-      </div>
-      <p class="muted" style="font-size:12px;margin-top:12px">~70% of sent threads are responses to inbound (recruiters, coach, alerts). ~30% are outbound that you initiated.</p>
+    <div class="diag">
+      <div class="v bad">Reactive</div>
+      <div class="l">Reactive vs proactive split (email-only proxy)</div>
+      <p>~70% of sent threads are responses to inbound (recruiters, coach, alerts). ~30% are outbound that I initiated.</p>
     </div>
   </div>
 
-  <div class="card" style="margin-top:20px">
+  <div class="insight" style="margin-top:18px">
     <h3>Top 3 time drains (named specifically)</h3>
-    <ol style="margin:0;padding-left:20px;line-height:1.8">
-      <li><strong>Recruiter inbound triage.</strong> 15+ unique recruiter touchpoints in 21 days across HSP, Search1, SG Partners, CPI, Greville, Nof1, Kimble. Each one needs a real read, a yes/no decision, and 2–4 follow-up exchanges. Most of your sent volume sits here.</li>
-      <li><strong>Job-alert firehose.</strong> LinkedIn alerts (3–5/day), Jobright (1–2/day), Glassdoor, Kimble, Greville digests — easily 50+ alert emails/week. Most are noise. The Daily Email Digest you built handles this partially, but you still scan the originals.</li>
-      <li><strong>Daily Email Digest iteration.</strong> You shipped at least 6 variants of your own digest in 4 days (Apr 1–5). That's healthy &quot;builder mode&quot; learning, but it's also you being your own product manager — there's no one else QA-ing or routing the work.</li>
-    </ol>
-  </div>
-</section>
-
-<!-- ============================================================ -->
-<section>
-  <h2><span class="num">03</span>Goal alignment</h2>
-  <p class="lede">For each priority in CLAUDE.md, where the data shows time going — and where the gap is.</p>
-
-  <div class="card" style="margin-bottom:16px">
-    <h3>Goal 1 — Build with AI (consumer → builder)</h3>
-    <p><strong>Where time is going:</strong> Strong. You enrolled in the Leland AI Builder bundle ($2,999, all 5 levels). Just finished Level 1 on April 16, Level 2 starts now. You've shipped working automations: Daily Email Digest (multiple iterations), HN Digest, n8n daily quote, AI-drafted email replies, Wispr Flow integration. You're sharing prompts with peers (Malcolm). This is the strongest goal-to-time match in the whole audit.</p>
-    <p><strong>Gap:</strong> You're building <em>personal-life</em> automations (digest, quote, settlement reminder). Almost nothing in the data shows AI being applied to your <em>actual PE deal workflow</em> — no model-builder, no diligence agent in use, no memo-drafter activity in the email. The professional half of the goal is under-served.</p>
-  </div>
-
-  <div class="card" style="margin-bottom:16px">
-    <h3>Goal 2 — Build a systematic job search engine</h3>
-    <p><strong>Where time is going:</strong> Heavy. You're in active intake mode with 7+ recruiters and 4–5 active processes in flight (Mubadala, SG Partners/Lifetime Value, Builders VC, Hyland, Long Ridge mentioned, Infinedi declined, Search1 client just rejected). Plus a regular weekly coaching cadence with Don Eash.</p>
-    <p><strong>Gap:</strong> The system is in your <em>head</em> and your <em>inbox</em>, not in a tool. There's no visible CRM, no tracker, no scoring rubric in the data. When Don asks &quot;where did Hyland end up&quot; you re-derive it from email. The job alerts pour in unfiltered. <strong>This is the biggest under-built infrastructure relative to how much time you spend on it.</strong></p>
-    <p class="muted" style="font-size:13px"><em>Calibration note:</em> in our chat earlier you described the pivot timeline as &quot;warming up, 6–18 months.&quot; The email data looks like &quot;active search, 3–6 months.&quot; Worth reconciling — either the timeline shifted or the activity is running ahead of the stated intent.</p>
-  </div>
-
-  <div class="card" style="margin-bottom:16px">
-    <h3>Goal 3 — Develop new AI skills continuously</h3>
-    <p><strong>Where time is going:</strong> Visible and structured. Leland program (Level 1 done, 2 starting), Solomon's AI course mentioned in earlier emails, Forte Labs newsletter, Hacker News AI digest you set up for yourself. You're also evaluating tools (Wispr Flow support ticket suggests genuine usage, not just signup).</p>
-    <p><strong>Gap:</strong> Learning is high-input (courses, newsletters, alerts). Output capture is mostly absent. There's no &quot;what I learned this week&quot; artifact in the data, no skill-builds tied back to deal work, no reusable Claude skills/hooks shipped. Risk: high information intake, low compounding.</p>
-  </div>
-
-  <div class="card">
-    <h3>What should be in the data but isn't</h3>
-    <ul class="tight">
-      <li><strong>Deal work.</strong> No CapIQ, PitchBook, Excel, or PG-related domains in the browser. Either it's all on a different machine (likely) or you're spending zero work-hours on PG from this account (also possible — this looks like your AI/personal box).</li>
-      <li><strong>A job pipeline tracker.</strong> No visits to Notion, Airtable, a CRM, or a sheet that tracks where each role stands. Pipeline lives in Gmail threads.</li>
-      <li><strong>Output of the AI builder program.</strong> Lots of intake (sessions, materials, instructor messages), no shipped artifacts visible in browser/email beyond the ones you built for yourself.</li>
+    <ul class="tight" style="padding-left:22px;list-style:decimal">
+      <li><strong>Recruiter inbound triage.</strong> 15+ unique recruiter touchpoints in 21 days across HSP, Search1, SG Partners, CPI, Greville, Nof1, Kimble. Each one needs a real read, a yes / no decision, and 2–4 follow-up exchanges. Most of my sent volume sits here.</li>
+      <li><strong>Job-alert firehose.</strong> LinkedIn alerts (3–5 / day), Jobright (1–2 / day), Glassdoor, Kimble, Greville digests — easily 50+ alert emails per week. Most are noise. The Daily Email Digest I built handles this partially, but I still scan the originals.</li>
+      <li><strong>Daily Email Digest iteration.</strong> I shipped at least 6 variants of my own digest in 4 days (Apr 1–5). That's healthy &ldquo;builder mode&rdquo; learning, but it's also me being my own product manager — there's no one else QA-ing or routing the work.</li>
     </ul>
   </div>
 </section>
 
-<!-- ============================================================ -->
 <section>
-  <h2><span class="num">04</span>Automation opportunities</h2>
-  <p class="lede">Each one is an outcome — what the world looks like after AI handles it. Ranked by impact (hours reclaimed × tie to top goal). All draft estimates.</p>
-
-  <div class="auto-card">
-    <div class="header">
-      <div class="outcome">My job pipeline tells me where every role stands without me opening Gmail<span class="pill draft">draft</span></div>
-      <div class="meta-row">
-        <span class="pill med">Medium lift</span>
-        <span class="reclaim">~3 hrs/wk</span>
-      </div>
-    </div>
-    <dl>
-      <dt>Today</dt><dd>Pipeline status lives in scattered Gmail threads. Don asks &quot;where's Hyland?&quot; and you scroll. Recruiters fall through gaps because there's no chase calendar.</dd>
-      <dt>Automated</dt><dd>An n8n workflow watches Gmail for recruiter senders and parses them into an Airtable/Notion pipeline (company, role, recruiter, stage, last touch, next action, my interest 1–10). Claude does the parsing. A Monday-morning email gives you the &quot;this week&quot; view: who to chase, who's stale, what's new. <strong>This is the &quot;systematic job search engine&quot; from your CLAUDE.md, made real.</strong></dd>
-      <dt>Why this first</dt><dd>Hits Goal 2 directly, uses tools you already know (n8n, Gmail, Claude), and pays back every single week of the search.</dd>
-    </dl>
+  <div class="section-head">
+    <span class="num">03</span>
+    <h2>Goal alignment</h2>
+    <span class="rule"></span>
   </div>
+  <p class="section-lede">For each priority in CLAUDE.md, where the data shows time going — and where the gap is.</p>
 
-  <div class="auto-card">
-    <div class="header">
-      <div class="outcome">Recruiter inbound gets pre-triaged into yes / maybe / pass before I touch it<span class="pill draft">draft</span></div>
-      <div class="meta-row">
-        <span class="pill quick">Quick win</span>
-        <span class="reclaim">~2 hrs/wk</span>
-      </div>
-    </div>
-    <dl>
-      <dt>Today</dt><dd>Each recruiter email is a 5–10 minute decision: read JD, judge fit, draft response, schedule. You do this 2–4 times per week, often during work hours.</dd>
-      <dt>Automated</dt><dd>A Claude-powered Gmail filter scores incoming recruiter emails against your stated preferences (NYC-based, B2B software focus, late-stage / scaleup / PortCo exec) and auto-drafts a polite pass for clear no-fits, a &quot;tell me more&quot; for maybes, and a &quot;let's schedule&quot; for strong fits. You review and send in one click.</dd>
-      <dt>Why this</dt><dd>Builds on your existing AI-draft setup. Removes ambient cognitive cost of recruiter triage.</dd>
-    </dl>
-  </div>
+  <div class="builds stagger">
 
-  <div class="auto-card">
-    <div class="header">
-      <div class="outcome">Every coaching session with Don leaves a structured artifact, not just an email<span class="pill draft">draft</span></div>
-      <div class="meta-row">
-        <span class="pill quick">Quick win</span>
-        <span class="reclaim">~1 hr/wk</span>
+    <article class="build-card">
+      <div class="build-spec">
+        <span class="id">Goal-01</span>
+        <span class="sep">/</span>
+        <span class="effort big">Build with AI</span>
+        <span class="sep">/</span>
+        <span class="hours">Consumer <strong>→</strong> builder</span>
       </div>
-    </div>
-    <dl>
-      <dt>Today</dt><dd>Don sends a recap email after each session (you re-routed it to personal Gmail on Apr 2). You read it, reply &quot;thanks,&quot; then it disappears into the inbox. Insights don't compound across sessions.</dd>
-      <dt>Automated</dt><dd>A Claude skill ingests Don's recap emails, tags themes (positioning, recruiter strategy, interview reps, etc.), and appends them to a single rolling &quot;Coaching Notes&quot; doc with action items. The same skill highlights what's <em>still open</em> from prior sessions.</dd>
-      <dt>Why this</dt><dd>You're already paying for the coaching. The bottleneck is retention &amp; follow-through, not insight quality.</dd>
-    </dl>
-  </div>
+      <h3 class="build-outcome">Strong on personal automations. Missing on the deal-work half of the goal.</h3>
+      <dl class="build-rows">
+        <div class="build-row">
+          <dt>Where time is going</dt>
+          <dd>Enrolled in the Leland AI Builder bundle ($2,999, all 5 levels). Just finished Level 1 on April 16, Level 2 starts now. Shipped working automations: Daily Email Digest (multiple iterations), HN Digest, n8n daily quote, AI-drafted email replies, Wispr Flow integration. Sharing prompts with peers (Malcolm). <strong>Strongest goal-to-time match in the whole audit.</strong></dd>
+        </div>
+        <div class="build-row">
+          <dt>Gap</dt>
+          <dd class="dd-muted">I'm building <em>personal-life</em> automations (digest, quote, settlement reminder). Almost nothing in the data shows AI being applied to my <em>actual PE deal workflow</em> — no model-builder, no diligence agent in use, no memo-drafter activity in the email. The professional half of the goal is under-served.</dd>
+        </div>
+      </dl>
+    </article>
 
-  <div class="auto-card">
-    <div class="header">
-      <div class="outcome">My PE deal work gets the same AI lift as my personal life<span class="pill draft">draft</span></div>
-      <div class="meta-row">
-        <span class="pill big">Big build</span>
-        <span class="reclaim">~5 hrs/wk</span>
+    <article class="build-card">
+      <div class="build-spec">
+        <span class="id">Goal-02</span>
+        <span class="sep">/</span>
+        <span class="effort big">Systematic job search</span>
+        <span class="sep">/</span>
+        <span class="hours">Engine, not folder</span>
       </div>
-    </div>
-    <dl>
-      <dt>Today</dt><dd>Every AI build in the email data is personal (digest, HN, settlement reminder, daily quote). Your three Claude Code agents (<code>diligence-researcher</code>, <code>memo-drafter</code>, <code>model-reviewer</code>) sit unused — no diligence runs, no memo drafts in the data.</dd>
-      <dt>Automated</dt><dd>Pick one PG deal stage (e.g. CIM intake) and build the AI workflow that handles it end-to-end on your work machine: PDF in → 1-page summary out, with key risks flagged, comp set sketched, and questions for management surfaced. Same pattern for IC memo first drafts, model sanity-checks, recurring weekly market-update digests for your team.</dd>
-      <dt>Why this</dt><dd>Goal 1 says &quot;professionally <em>and</em> personally.&quot; Right now it's only personally. This is the half that compounds into either (a) being indispensable at PG or (b) being a credible AI builder when interviewing for ops roles.</dd>
-    </dl>
-  </div>
+      <h3 class="build-outcome">Heavy intake activity, but no system. The biggest under-built infrastructure relative to time spent.</h3>
+      <dl class="build-rows">
+        <div class="build-row">
+          <dt>Where time is going</dt>
+          <dd>Active intake mode with 7+ recruiters and 4–5 active processes in flight (Mubadala, SG Partners / Lifetime Value, Builders VC, Hyland, Long Ridge mentioned, Infinedi declined, Search1 client just rejected). Plus a regular weekly coaching cadence with Don Eash.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Gap</dt>
+          <dd class="dd-muted">The system is in my <em>head</em> and my <em>inbox</em>, not in a tool. There's no visible CRM, no tracker, no scoring rubric in the data. When Don asks &ldquo;where did Hyland end up&rdquo; I re-derive it from email. The job alerts pour in unfiltered. <strong>This is the biggest under-built infrastructure relative to how much time I spend on it.</strong></dd>
+        </div>
+        <div class="build-row">
+          <dt>Calibration</dt>
+          <dd class="dd-muted">Earlier I described the pivot timeline as &ldquo;warming up, 6–18 months.&rdquo; The email data looks like &ldquo;active search, 3–6 months.&rdquo; Worth reconciling — either the timeline shifted or the activity is running ahead of stated intent.</dd>
+        </div>
+      </dl>
+    </article>
 
-  <div class="auto-card">
-    <div class="header">
-      <div class="outcome">The job-alert firehose collapses into one ranked weekly email, not 50 daily ones<span class="pill draft">draft</span></div>
-      <div class="meta-row">
-        <span class="pill quick">Quick win</span>
-        <span class="reclaim">~1.5 hrs/wk</span>
+    <article class="build-card">
+      <div class="build-spec">
+        <span class="id">Goal-03</span>
+        <span class="sep">/</span>
+        <span class="effort med">AI skill development</span>
+        <span class="sep">/</span>
+        <span class="hours">Intake high, output low</span>
       </div>
-    </div>
-    <dl>
-      <dt>Today</dt><dd>LinkedIn (3–5/day), Jobright (1–2/day), Glassdoor, Kimble, Greville — 50+ alert emails per week. You scan most and act on almost none.</dd>
-      <dt>Automated</dt><dd>Extends your Daily Email Digest: alert emails get parsed for role + company + comp + location, scored against your target profile, deduped across sources, and rolled into a Friday email with the top 5–10 worth a closer look. Everything else auto-archives.</dd>
-      <dt>Why this</dt><dd>You already built the digest. This is one more parsing layer on top.</dd>
-    </dl>
-  </div>
+      <h3 class="build-outcome">High input, low compounding. Risk: lots of intake, no shipped artifacts tied back to deal work.</h3>
+      <dl class="build-rows">
+        <div class="build-row">
+          <dt>Where time is going</dt>
+          <dd>Visible and structured. Leland program (Level 1 done, 2 starting), Solomon's AI course mentioned in earlier emails, Forte Labs newsletter, Hacker News AI digest I set up for myself. Also evaluating tools (Wispr Flow support ticket suggests genuine usage, not just signup).</dd>
+        </div>
+        <div class="build-row">
+          <dt>Gap</dt>
+          <dd class="dd-muted">Learning is high-input (courses, newsletters, alerts). Output capture is mostly absent. There's no &ldquo;what I learned this week&rdquo; artifact in the data, no skill-builds tied back to deal work, no reusable Claude skills or hooks shipped. <strong>Risk: high intake, low compounding.</strong></dd>
+        </div>
+      </dl>
+    </article>
 
-  <div class="auto-card">
-    <div class="header">
-      <div class="outcome">Networking calls produce a structured record, not just &quot;Thanks for talking&quot; emails<span class="pill draft">draft</span></div>
-      <div class="meta-row">
-        <span class="pill med">Medium lift</span>
-        <span class="reclaim">~1 hr/wk</span>
+    <article class="build-card">
+      <div class="build-spec">
+        <span class="id">Goal-X</span>
+        <span class="sep">/</span>
+        <span class="effort">What's missing from the data</span>
+        <span class="sep">/</span>
+        <span class="hours">By absence</span>
       </div>
-    </div>
-    <dl>
-      <dt>Today</dt><dd>Calls with Andrew Schmitt (Builders VC), Kyle Bryant (Fractional AI), Jeremy Noskin (Alternative Payments / Ctrl-Tab), etc. Each one ends with a short thank-you and then nothing structured. Hard to remember what each person actually does or what next-step you committed to.</dd>
-      <dt>Automated</dt><dd>Wispr Flow + Claude skill: dictate a 60-second post-call brain dump, Claude converts it into a contact card (who, role, themes, next action, when to follow up). Feeds the same Notion/Airtable as the job pipeline. Six months from now you have a real network you can actually query.</dd>
-      <dt>Why this</dt><dd>You already have Wispr Flow installed. Pairs with Goal 2.</dd>
-    </dl>
+      <h3 class="build-outcome">Three things I'd expect to see and don't.</h3>
+      <dl class="build-rows">
+        <div class="build-row">
+          <dt>Deal work</dt>
+          <dd class="dd-muted">No CapIQ, PitchBook, Excel, or PG-related domains in the browser. Either it's all on a different machine (likely) or I'm spending zero work-hours on PG from this account (also possible — this looks like my AI / personal box).</dd>
+        </div>
+        <div class="build-row">
+          <dt>Job pipeline tracker</dt>
+          <dd class="dd-muted">No visits to Notion, Airtable, a CRM, or a sheet that tracks where each role stands. Pipeline lives in Gmail threads.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Builder-program output</dt>
+          <dd class="dd-muted">Lots of intake (sessions, materials, instructor messages), no shipped artifacts visible in browser or email beyond the ones I built for myself.</dd>
+        </div>
+      </dl>
+    </article>
+
   </div>
 </section>
 
-<!-- ============================================================ -->
 <section>
-  <h2><span class="num">05</span>Data sources</h2>
-  <div class="card sources">
-    <div class="row"><span>Gmail</span><span class="ok">Connected — 30 days, ~250 threads sampled</span><span>Apr 1 – Apr 21</span></div>
-    <div class="row"><span>Slack</span><span class="partial">Connected (Leland AI Builder workspace only — work Slack absent)</span><span>Apr 7 – Apr 21</span></div>
-    <div class="row"><span>Windows Activity DB</span><span class="partial">Read OK, but only 29 events from a single day; foreground sessions absent</span><span>Apr 20 only</span></div>
-    <div class="row"><span>Edge browser history</span><span class="partial">Read OK, but only 197 visits over 24 hours (account is new)</span><span>Apr 20 – Apr 21</span></div>
-    <div class="row"><span>Chrome browser history</span><span class="missing">No profile on this Windows account — fell back to Edge</span><span>—</span></div>
-    <div class="row"><span>Google Calendar</span><span class="missing">MCP registered, only auth handshake exposed; connect via claude.ai &gt; Settings &gt; Connectors</span><span>—</span></div>
+  <div class="section-head">
+    <span class="num">04</span>
+    <h2>Automation opportunities</h2>
+    <span class="rule"></span>
   </div>
-  <p class="muted" style="font-size:12px;margin-top:14px">To strengthen the next run: enable Windows Activity History on your primary work machine (Settings → Privacy &amp; security → Activity history), connect Google Calendar in claude.ai connectors, and either point the audit at your work-Slack workspace or accept that Slack is out of scope for personal-side analysis.</p>
+  <p class="section-lede">Each one is an outcome — what the world looks like after AI handles it. Ranked by impact (hours reclaimed × tie to top goal). All draft estimates.</p>
+
+  <div class="builds stagger">
+
+    <article class="build-card">
+      <div class="build-spec">
+        <span class="id">Auto-01</span>
+        <span class="sep">/</span>
+        <span class="effort med">Medium lift</span>
+        <span class="sep">/</span>
+        <span class="hours"><strong>~3.0</strong> hrs reclaimed / wk</span>
+        <span class="draft"><span class="bullet"></span>Draft</span>
+      </div>
+      <h3 class="build-outcome">My job pipeline tells me where every role stands without me opening Gmail.</h3>
+      <dl class="build-rows">
+        <div class="build-row">
+          <dt>Today</dt>
+          <dd class="dd-muted">Pipeline status lives in scattered Gmail threads. Don asks &ldquo;where's Hyland?&rdquo; and I scroll. Recruiters fall through gaps because there's no chase calendar.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Automated</dt>
+          <dd>An n8n workflow watches Gmail for recruiter senders and parses each thread into an Airtable / Notion pipeline (company, role, recruiter, stage, last touch, next action, my interest 1–10). Claude does the parsing. A Monday-morning email gives the &ldquo;this week&rdquo; view: who to chase, who's stale, what's new. <strong>This is the &ldquo;systematic job search engine&rdquo; from CLAUDE.md, made real.</strong></dd>
+        </div>
+        <div class="build-row">
+          <dt>Why first</dt>
+          <dd class="dd-muted">Hits Goal 2 directly, uses tools I already know (n8n, Gmail, Claude), and pays back every single week of the search.</dd>
+        </div>
+      </dl>
+    </article>
+
+    <article class="build-card">
+      <div class="build-spec">
+        <span class="id">Auto-02</span>
+        <span class="sep">/</span>
+        <span class="effort quick">Quick win</span>
+        <span class="sep">/</span>
+        <span class="hours"><strong>~2.0</strong> hrs reclaimed / wk</span>
+        <span class="draft"><span class="bullet"></span>Draft</span>
+      </div>
+      <h3 class="build-outcome">Recruiter inbound gets pre-triaged into yes / maybe / pass before I touch it.</h3>
+      <dl class="build-rows">
+        <div class="build-row">
+          <dt>Today</dt>
+          <dd class="dd-muted">Each recruiter email is a 5–10 minute decision: read JD, judge fit, draft response, schedule. I do this 2–4 times per week, often during work hours.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Automated</dt>
+          <dd>A Claude-powered Gmail filter scores incoming recruiter emails against my stated profile (NYC-based, B2B software focus, late-stage / scaleup / PortCo exec) and auto-drafts a polite pass for clear no-fits, a &ldquo;tell me more&rdquo; for maybes, and a &ldquo;let's schedule&rdquo; for strong fits. I review and send in one click.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Why this</dt>
+          <dd class="dd-muted">Builds on my existing AI-draft setup. Removes the ambient cognitive cost of recruiter triage.</dd>
+        </div>
+      </dl>
+    </article>
+
+    <article class="build-card">
+      <div class="build-spec">
+        <span class="id">Auto-03</span>
+        <span class="sep">/</span>
+        <span class="effort quick">Quick win</span>
+        <span class="sep">/</span>
+        <span class="hours"><strong>~1.0</strong> hr reclaimed / wk</span>
+        <span class="draft"><span class="bullet"></span>Draft</span>
+      </div>
+      <h3 class="build-outcome">Every coaching session with Don leaves a structured artifact, not just an email.</h3>
+      <dl class="build-rows">
+        <div class="build-row">
+          <dt>Today</dt>
+          <dd class="dd-muted">Don sends a recap email after each session (re-routed to personal Gmail on Apr 2). I read it, reply &ldquo;thanks,&rdquo; then it disappears into the inbox. Insights don't compound across sessions.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Automated</dt>
+          <dd>A Claude skill ingests Don's recap emails, tags themes (positioning, recruiter strategy, interview reps), and appends them to a single rolling &ldquo;Coaching Notes&rdquo; doc with action items. The same skill highlights what's <em>still open</em> from prior sessions.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Why this</dt>
+          <dd class="dd-muted">I'm already paying for the coaching. The bottleneck is retention &amp; follow-through, not insight quality.</dd>
+        </div>
+      </dl>
+    </article>
+
+    <article class="build-card">
+      <div class="build-spec">
+        <span class="id">Auto-04</span>
+        <span class="sep">/</span>
+        <span class="effort big">Big build</span>
+        <span class="sep">/</span>
+        <span class="hours"><strong>~5.0</strong> hrs reclaimed / wk</span>
+        <span class="draft"><span class="bullet"></span>Draft</span>
+      </div>
+      <h3 class="build-outcome">My PE deal work gets the same AI lift as my personal life.</h3>
+      <dl class="build-rows">
+        <div class="build-row">
+          <dt>Today</dt>
+          <dd class="dd-muted">Every AI build in the email data is personal (digest, HN, settlement reminder, daily quote). My three Claude Code agents (<code>diligence-researcher</code>, <code>memo-drafter</code>, <code>model-reviewer</code>) sit unused — no diligence runs, no memo drafts in the data.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Automated</dt>
+          <dd>Pick one PG deal stage (e.g. CIM intake) and build the AI workflow that handles it end-to-end on my work machine: PDF in, one-page summary out, with key risks flagged, comp set sketched, and questions for management surfaced. Same pattern for IC memo first drafts, model sanity-checks, recurring weekly market-update digests for the team.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Why this</dt>
+          <dd class="dd-muted">Goal 1 says &ldquo;professionally <em>and</em> personally.&rdquo; Right now it's only personally. <strong>This is the half that compounds</strong> — into either being indispensable at PG, or being a credible AI builder when interviewing for ops roles.</dd>
+        </div>
+      </dl>
+    </article>
+
+    <article class="build-card">
+      <div class="build-spec">
+        <span class="id">Auto-05</span>
+        <span class="sep">/</span>
+        <span class="effort quick">Quick win</span>
+        <span class="sep">/</span>
+        <span class="hours"><strong>~1.5</strong> hrs reclaimed / wk</span>
+        <span class="draft"><span class="bullet"></span>Draft</span>
+      </div>
+      <h3 class="build-outcome">The job-alert firehose collapses into one ranked weekly email, not 50 daily ones.</h3>
+      <dl class="build-rows">
+        <div class="build-row">
+          <dt>Today</dt>
+          <dd class="dd-muted">LinkedIn (3–5 / day), Jobright (1–2 / day), Glassdoor, Kimble, Greville — 50+ alert emails per week. I scan most and act on almost none.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Automated</dt>
+          <dd>Extends the Daily Email Digest: alerts get parsed for role + company + comp + location, scored against my target profile, deduped across sources, and rolled into a Friday email with the top 5–10 worth a closer look. Everything else auto-archives.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Why this</dt>
+          <dd class="dd-muted">I already built the digest. This is one more parsing layer on top.</dd>
+        </div>
+      </dl>
+    </article>
+
+    <article class="build-card">
+      <div class="build-spec">
+        <span class="id">Auto-06</span>
+        <span class="sep">/</span>
+        <span class="effort med">Medium lift</span>
+        <span class="sep">/</span>
+        <span class="hours"><strong>~1.0</strong> hr reclaimed / wk</span>
+        <span class="draft"><span class="bullet"></span>Draft</span>
+      </div>
+      <h3 class="build-outcome">Networking calls produce a structured record, not just &ldquo;Thanks for talking&rdquo; emails.</h3>
+      <dl class="build-rows">
+        <div class="build-row">
+          <dt>Today</dt>
+          <dd class="dd-muted">Calls with Andrew Schmitt (Builders VC), Kyle Bryant (Fractional AI), Jeremy Noskin (Alternative Payments / Ctrl-Tab), etc. Each one ends with a short thank-you and then nothing structured. Hard to remember what each person actually does or what next-step I committed to.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Automated</dt>
+          <dd>Wispr Flow + a Claude skill: dictate a 60-second post-call brain dump, Claude converts it into a contact card (who, role, themes, next action, when to follow up). Feeds the same Notion / Airtable as the job pipeline. Six months from now I have a real network I can actually query.</dd>
+        </div>
+        <div class="build-row">
+          <dt>Why this</dt>
+          <dd class="dd-muted">Wispr Flow is already installed. Pairs with Goal 2.</dd>
+        </div>
+      </dl>
+    </article>
+
+  </div>
+</section>
+
+<section>
+  <div class="section-head">
+    <span class="num">05</span>
+    <h2>Data sources</h2>
+    <span class="rule"></span>
+  </div>
+
+  <div class="sources">
+    <div class="sources-row"><span class="src-name">Gmail</span><span class="src-status ok">Connected — 30 days, ~250 threads sampled</span><span class="src-window">Apr 1 – Apr 21</span></div>
+    <div class="sources-row"><span class="src-name">Slack</span><span class="src-status partial">Connected (Leland AI Builder workspace only — work Slack absent)</span><span class="src-window">Apr 7 – Apr 21</span></div>
+    <div class="sources-row"><span class="src-name">Windows Activity DB</span><span class="src-status partial">Read OK, but only 29 events from a single day; foreground sessions absent</span><span class="src-window">Apr 20 only</span></div>
+    <div class="sources-row"><span class="src-name">Edge browser history</span><span class="src-status partial">Read OK, but only 197 visits over 24 hours (account is new)</span><span class="src-window">Apr 20 – Apr 21</span></div>
+    <div class="sources-row"><span class="src-name">Chrome browser history</span><span class="src-status missing">No profile on this Windows account — fell back to Edge</span><span class="src-window">—</span></div>
+    <div class="sources-row"><span class="src-name">Google Calendar</span><span class="src-status missing">MCP registered, only auth handshake exposed; connect via claude.ai &gt; Settings &gt; Connectors</span><span class="src-window">—</span></div>
+  </div>
+  <p class="sources-note">To strengthen the next run: enable Windows Activity History on my primary work machine (Settings &gt; Privacy &amp; security &gt; Activity history), connect Google Calendar in claude.ai connectors, and either point the audit at my work-Slack workspace or accept that Slack is out of scope for personal-side analysis.</p>
 </section>
 
 <footer>
   <div style="margin-bottom:14px"><a href="/">Dashboard</a> &middot; <a href="/ai-builder-plan.html">Plan</a> &middot; <a href="/time-audit.html">Time audit</a></div>
-  Time Audit — April 21, 2026 · Part of my AI Builder Automation Portfolio
+  Time Audit <span class="sep">—</span> April 21, 2026 <span class="sep">|</span> Part of my AI Builder Automation Portfolio
 </footer>
 
 </div>

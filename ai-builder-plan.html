@@ -227,7 +227,7 @@
     </div>
   </div>
 
-  <a class="audit-link" href="time-audit.html">Full Time Audit <span class="arrow">→</span></a>
+  <a class="audit-link" href="time-audit.html" data-private-hide>Full Time Audit <span class="arrow">→</span></a>
 </section>
 
 <section>
@@ -424,8 +424,8 @@
           <dt>URLs</dt>
           <dd>
             <a href="/">Dashboard</a> &middot;
-            <a href="/ai-builder-plan.html">Plan</a> &middot;
-            <a href="/time-audit.html">Time audit</a>
+            <a href="/ai-builder-plan.html">Plan</a><span data-private-hide> &middot;
+            <a href="/time-audit.html">Time audit</a></span>
           </dd>
         </div>
       </dl>
@@ -511,7 +511,7 @@
 </section>
 
 <footer>
-  <div style="margin-bottom:14px"><a href="/">Dashboard</a> &middot; <a href="/ai-builder-plan.html">Plan</a> &middot; <a href="/time-audit.html">Time audit</a></div>
+  <div style="margin-bottom:14px"><a href="/">Dashboard</a> &middot; <a href="/ai-builder-plan.html">Plan</a><span data-private-hide> &middot; <a href="/time-audit.html">Time audit</a></span></div>
   AI Builder Automation Portfolio <span class="sep">—</span> April 21, 2026 <span class="sep">|</span> Built in L2
 </footer>
 
@@ -593,6 +593,17 @@
   document.addEventListener('keydown', function(e){
     if(e.key === 'Escape') closeAll();
   });
+})();
+</script>
+
+<script>
+(function(){
+  var els = document.querySelectorAll('[data-private-hide]');
+  if (!els.length) return;
+  fetch('/time-audit.html', { method: 'HEAD', cache: 'no-store' })
+    .then(function(r){ if (!r.ok) hide(); })
+    .catch(hide);
+  function hide(){ els.forEach(function(el){ el.style.display = 'none'; }); }
 })();
 </script>
 </body>

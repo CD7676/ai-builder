@@ -2,8 +2,22 @@ export const config = {
   matcher: '/((?!_vercel|favicon\\.ico).*)',
 };
 
+const PRIVATE_PATHS = ['/time-audit', '/time-audit.html'];
+
+function isPrivatePath(pathname) {
+  return PRIVATE_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'));
+}
+
 export default function middleware(request) {
+  const pathname = new URL(request.url).pathname;
+
   if (process.env.PRIVATE_AUTH !== 'true') {
+    if (isPrivatePath(pathname)) {
+      return new Response('Not Found', {
+        status: 404,
+        headers: { 'Content-Type': 'text/plain' },
+      });
+    }
     return;
   }
 
